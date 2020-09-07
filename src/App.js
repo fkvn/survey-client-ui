@@ -1,25 +1,77 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Layout from "./hoc/Layout/Layout";
+import { Switch, Route } from "react-router-dom";
+
+import SurveyBuilder from "./Containers/SurveyBuilder/SurveyBuilder";
+import ControllerBuilder from "./Containers/DashboardBuilder/ControllerBuilder";
+// import SubmitSurveyBuilder from "./Containers/SurveyBuilder/SubmitSurveyBuilder";
+
+import NotFoundPage from "./NotFoundPage";
+// import { Jumbotron, Button } from "react-bootstrap";
 
 function App() {
+  // const history = useHistory();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <></>
+      <>
+        <Layout>
+          <Switch>
+            <Route path="/" exact component={SurveyBuilder}></Route>
+            <Route path="/dashboard" component={ControllerBuilder}></Route>
+            {/* <Route path="/surveys/response/submit" exact>
+              <SubmitSurveyBuilder />
+            </Route> */}
+            {/* <Route path="/surveys/response/successful" exact>
+              <Jumbotron className="pb-5 pt-5">
+                <h1>Thank you for taking survey!</h1>
+                <p> Your response has been submitted successfully.</p>
+                <div className="p-0 mb-0 mt-5">
+                  <Button
+                    variant="primary mr-5"
+                    onClick={() => history.push("/")}
+                  >
+                    More Surveys
+                  </Button>
+                  <Button
+                    variant="success"
+                    onClick={() => history.push(`/dashboard/mysurveys`)}
+                  >
+                    Create Survey
+                  </Button>
+                </div>
+              </Jumbotron>
+            </Route> */}
+            {/* <Route path="/surveys/response/unsuccessful" exact>
+              <Jumbotron className="pb-5 pt-5">
+                <h1 className="text-danger">Oops! Something went wrong</h1>
+                <p>
+                  Your response has been submitted
+                  <span className="text-danger"> unsuccessfully</span>.
+                </p>
+                <div className="p-0 mb-0 mt-5">
+                  <Button
+                    variant="primary mr-5"
+                    onClick={() => history.push("/")}
+                  >
+                    More Surveys
+                  </Button>
+                  <Button
+                    variant="success"
+                    onClick={() => history.push(`/dashboard/mysurveys`)}
+                  >
+                    Create Survey
+                  </Button>
+                </div>
+              </Jumbotron>
+            </Route> */}
+
+            <Route path="*" component={NotFoundPage} />
+          </Switch>
+        </Layout>
+      </>
+    </>
   );
 }
 
