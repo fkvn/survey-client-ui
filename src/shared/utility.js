@@ -98,7 +98,9 @@ export const updateQDescImgs = (description, attachments) => {
 
     // update alignment
     const parent = imgSrcUrls[i].parentNode;
-    const parentStyles = parent.getAttribute("style").split(";");
+    const parentStyles = parent.getAttribute("style")
+      ? parent.getAttribute("style").split(";")
+      : [];
     let imgAlignment = "";
 
     for (let j = 0; j < parentStyles.length; j++) {
@@ -159,9 +161,8 @@ export const exportFromEditor = (editorState, attachmentObjects) => {
   for (let i = 0; i < imgSrcUrls.length; i++) {
     const src = imgSrcUrls[i].getAttribute("src");
     const attachment = attachmentObjects && attachmentObjects[src];
-    console.log(attachment);
+
     if (attachment) {
-      console.log("set index");
       imgSrcUrls[i].setAttribute("attachmentIndex", i);
 
       newattachments[

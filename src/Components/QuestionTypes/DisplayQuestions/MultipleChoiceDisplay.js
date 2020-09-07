@@ -53,11 +53,11 @@ function MultipleChoiceDisplay(props) {
       {type === "checkbox" &&
         question.maxSelections > 1 &&
         question.maxSelections < question.choices.length && (
-          <div>
+          <Form.Group className="mb-2 mt-0 pt-0">
             <small className="text-danger">
               <strong>Max Selections: {question.maxSelections}</strong>
             </small>
-          </div>
+          </Form.Group>
         )}
     </>
   );

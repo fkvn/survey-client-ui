@@ -20,7 +20,6 @@ function PublishSurveyBuilder(props) {
     };
 
     dispatch(actionCreators.updateSurvey(survey.id, updatedSurvey)).then(() => {
-      console.log(history.location.pathname);
       if (
         history.location.pathname !== "/dashboard/mysurveys" &&
         history.location.pathname !== "/dashboard"

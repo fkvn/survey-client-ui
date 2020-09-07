@@ -406,6 +406,9 @@ function AddEditQuestionForm(props) {
                     ? Number(minSelections)
                     : 1
                   : 0;
+            } else {
+              newQuestion.minSelections = choices.length > 0 ? 1 : 0;
+              newQuestion.maxSelections = choices.length > 0 ? 1 : 0;
             }
           }
           break;
