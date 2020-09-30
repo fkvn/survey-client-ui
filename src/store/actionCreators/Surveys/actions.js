@@ -157,6 +157,21 @@ export const updateQuestion = (sectionId, question) => {
   };
 };
 
+export const updateQuestionIndex = (
+  sectionId,
+  questionId,
+  oldIndex,
+  newIndex
+) => {
+  return {
+    type: actionTypes.UPDATE_QUESTION_INDEX,
+    sectionId,
+    questionId: questionId,
+    oldIndex: oldIndex,
+    newIndex: newIndex,
+  };
+};
+
 export const deleteQuestion = (sectionId, questionId) => {
   return {
     type: actionTypes.DELETE_QUESTION,

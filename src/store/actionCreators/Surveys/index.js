@@ -12,6 +12,7 @@ export {
   // question
   addQuestion,
   updateQuestion,
+  updateQuestionIndex,
   deleteQuestion,
   // response
   addResponse,

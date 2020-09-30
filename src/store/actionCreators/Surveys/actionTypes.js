@@ -13,6 +13,7 @@ export const DELETE_SECTION = "DELETE_SECTION";
 // question
 export const ADD_QUESTION = "ADD_QUESTION";
 export const UPDATE_QUESTION = "UPDATE_QUESTION";
+export const UPDATE_QUESTION_INDEX = "UPDATE_QUESTION_INDEX";
 export const DELETE_QUESTION = "DELETE_QUESTION";
 
 // response

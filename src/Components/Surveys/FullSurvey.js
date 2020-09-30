@@ -294,6 +294,23 @@ function FullSurvey(props) {
         });
       },
     };
+
+    const moveQuestion = (
+      <UpdateQuestionBuilder
+        surveyId={survey.id}
+        moveQuestion={true}
+        question={question}
+        section={section}
+        updateQuestion={(updateQuestion) =>
+          setRequest({
+            ...request,
+            updatingSection: section,
+            updatingQuestion: updateQuestion,
+          })
+        }
+      ></UpdateQuestionBuilder>
+    );
+
     let allowedOptions = [];
 
     allowedOptions = [{ ...editQuestionOption }, { ...deleteQuestionOptions }];
@@ -302,13 +319,16 @@ function FullSurvey(props) {
       <>
         {allowedOptions.map((op, i) => (
           <IconButton
+            btnClassName="p-0 m-0 mb-2"
             type={op.type}
             title={op.title}
             onClickHandler={op.onClick}
             key={i}
             index={i}
+            disabled={op.disabled}
           />
         ))}
+        {moveQuestion}
       </>
     );
   };
@@ -351,7 +371,7 @@ function FullSurvey(props) {
           }
         >
           <Row className=" bg-light rounded p-2 m-2">
-            <Col sm={2}>
+            <Col sm={3}>
               <Nav variant="pills" className="flex-column">
                 {section.questions.map((question, index) => (
                   <Nav.Item key={index}>
@@ -378,7 +398,7 @@ function FullSurvey(props) {
                 ))}
               </Nav>
             </Col>
-            <Col sm={10}>
+            <Col sm={9}>
               <Tab.Content>
                 {section.questions.map((question, index) => (
                   <Tab.Pane key={index} eventKey={index}>
@@ -554,6 +574,54 @@ function FullSurvey(props) {
     );
   };
 
+  // const SurveySections = ({ sections }) => {
+  //   return (
+  //     <>
+  //       <Tabs
+  //         defaultActiveKey={request.updatingSection.sectionIndex}
+  //         transition={false}
+  //         id="noanim-tab-example"
+  //         className="my-4 mx-4 border-bottom "
+  //       >
+  //         {sections.map((sec, index) => (
+  //           <Tab
+  //             eventKey={index}
+  //             title={<SectionTitleBar sec={sec} />}
+  //             key={index}
+  //             className="p-0 m-0"
+  //           >
+  //             <DisplayDescription
+  //               description={sec.description}
+  //               label="Description"
+  //             ></DisplayDescription>
+  //             {sec.questions.length > 0 && <QuestionsDisplay section={sec} />}
+  //             <Form.Group className="m-4">
+  //               <Button
+  //                 variant="success"
+  //                 onClick={() =>
+  //                   setRequest({
+  //                     ...request,
+  //                     showAddQuestionModal: true,
+  //                     updatingSection: sec,
+  //                     updatingQuestion:
+  //                       sec.questions && sec.questions.length > 0
+  //                         ? sec.questions[0]
+  //                         : request.updatingQuestion,
+  //                   })
+  //                 }
+  //               >
+  //                 Add Question
+  //               </Button>
+  //             </Form.Group>
+  //           </Tab>
+  //         ))}
+  //       </Tabs>
+  //     </>
+  //   );
+  // };
+
+  // ============================ Main Display ===========================
+
   const SurveySections = ({ sections }) => {
     return (
       <>
@@ -600,7 +668,6 @@ function FullSurvey(props) {
     );
   };
 
-  // ============================ Main Display ===========================
   const DisplayDescription = ({ description, mutedOption, label }) => {
     return (
       <Card.Text className="ml-4 mb-2">

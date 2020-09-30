@@ -11,7 +11,7 @@ function UpdateSectionBuilder(props) {
   const handlerUpdateSectionSubmit = (updatedSection) => {
     dispatch(
       actionCreators.updateSection(surveyId, section.id, updatedSection)
-    );
+    ).then(() => onHide());
   };
 
   const updateSectionModal = (

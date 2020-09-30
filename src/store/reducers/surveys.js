@@ -239,6 +239,41 @@ const updateQuestion = (state, action) => {
   });
 };
 
+const updateQuestionIndex = (state, action) => {
+  const updatedSections = state.fullSurvey.questionSections.reduce(
+    (newSec, sec) => [
+      ...newSec,
+      sec.id === action.sectionId
+        ? {
+            ...sec,
+            questions: sec.questions.reduce(
+              (newQs, q) => [
+                ...newQs,
+                q.id === action.questionId
+                  ? {
+                      ...sec.questions[action.newIndex],
+                      questionIndex: action.oldIndex,
+                    }
+                  : q.questionIndex === action.newIndex
+                  ? {
+                      ...sec.questions[action.oldIndex],
+                      questionIndex: action.newIndex,
+                    }
+                  : { ...q },
+              ],
+              []
+            ),
+          }
+        : { ...sec },
+    ],
+    []
+  );
+
+  return {
+    fullSurvey: { ...state.fullSurvey, questionSections: updatedSections },
+  };
+};
+
 const deleteQuestion = (state, action) => {
   // section id
   // question id
@@ -365,6 +400,8 @@ const reducer = (state = initialState, action) => {
       return addQuestion(state, action);
     case actionTypes.UPDATE_QUESTION:
       return updateQuestion(state, action);
+    case actionTypes.UPDATE_QUESTION_INDEX:
+      return updateQuestionIndex(state, action);
     case actionTypes.DELETE_QUESTION:
       return deleteQuestion(state, action);
 

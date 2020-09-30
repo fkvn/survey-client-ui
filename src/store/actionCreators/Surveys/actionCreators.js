@@ -252,6 +252,28 @@ export const updateQuestion = (
   };
 };
 
+export const updateQuestionIndex = (
+  surveyId,
+  sectionId,
+  questionId,
+  oldIndex,
+  newIndex
+) => {
+  return (dispatch) => {
+    axios
+      .put(
+        `/surveys/${surveyId}/sections/${sectionId}/questions/${questionId}/index`,
+        { index: newIndex }
+      )
+      .then(() =>
+        dispatch(
+          actions.updateQuestionIndex(sectionId, questionId, oldIndex, newIndex)
+        )
+      )
+      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+  };
+};
+
 export const deleteQuestion = (surveyId, sectionId, questionId) => {
   return (dispatch) => {
     return axios

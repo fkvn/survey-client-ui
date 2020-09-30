@@ -11,6 +11,7 @@ function IconButton(props) {
     index = 0,
     size = "sm",
     disabled,
+    btnClassName,
   } = props;
 
   const options = [
@@ -54,6 +55,16 @@ function IconButton(props) {
       icon: ["fas", "minus-circle"],
       color: "text-danger",
     },
+    {
+      name: "Move Up",
+      icon: ["fas", "arrow-up"],
+      color: "text-info",
+    },
+    {
+      name: "Move Down",
+      icon: ["fas", "arrow-down"],
+      color: "text-info",
+    },
   ];
 
   const selectedButton = options.reduce(
@@ -70,7 +81,7 @@ function IconButton(props) {
         variant="link"
         onClick={onClickHandler}
         size={size}
-        className="px-1 "
+        className={`px-1 ${btnClassName}`}
         disabled={disabled}
       >
         <FontAwesomeIcon

@@ -14,6 +14,8 @@ import {
   faBars,
   faCheckCircle,
   faTimes,
+  faArrowDown,
+  faArrowUp,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -30,5 +32,7 @@ library.add(
   faChevronDown,
   faBars,
   faCheckCircle,
-  faTimes
+  faTimes,
+  faArrowDown,
+  faArrowUp
 );
