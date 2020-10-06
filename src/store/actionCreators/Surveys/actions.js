@@ -131,6 +131,15 @@ export const updateSection = (sectionId, fields) => {
   };
 };
 
+export const updateSectionIndex = (surveyId, oldIndex, newIndex) => {
+  return {
+    type: actionTypes.UPDATE_SECTION_INDEX,
+    surveyId: surveyId,
+    oldIndex: oldIndex,
+    newIndex: newIndex,
+  };
+};
+
 export const deleteSection = (sectionId) => {
   return {
     type: actionTypes.DELETE_SECTION,
@@ -157,16 +166,10 @@ export const updateQuestion = (sectionId, question) => {
   };
 };
 
-export const updateQuestionIndex = (
-  sectionId,
-  questionId,
-  oldIndex,
-  newIndex
-) => {
+export const updateQuestionIndex = (sectionId, oldIndex, newIndex) => {
   return {
     type: actionTypes.UPDATE_QUESTION_INDEX,
-    sectionId,
-    questionId: questionId,
+    sectionId: sectionId,
     oldIndex: oldIndex,
     newIndex: newIndex,
   };

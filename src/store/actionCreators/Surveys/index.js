@@ -8,6 +8,7 @@ export {
   // section
   addSection,
   updateSection,
+  updateSectionIndex,
   deleteSection,
   // question
   addQuestion,

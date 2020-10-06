@@ -212,6 +212,43 @@ export const diffArr = (a1, a2) => {
   return exclusiveArr(a1, a2).concat(exclusiveArr(a2, a1));
 };
 
+export const moveItemFromSource = (source = [], oldIndex = 0, newIndex = 0) => {
+  console.log(oldIndex);
+  console.log(newIndex);
+  const afterMovedSource = [...source];
+
+  if (oldIndex !== newIndex && afterMovedSource.length > 0) {
+    let currentValueIndex = 0;
+
+    for (let i = 0; i < source.length; i++) {
+      if (i === oldIndex || i === newIndex) {
+        if (i === oldIndex) {
+          if (currentValueIndex === oldIndex) {
+            currentValueIndex = currentValueIndex + 1;
+          }
+          afterMovedSource[i] = { ...source[currentValueIndex] };
+          currentValueIndex = currentValueIndex + 1;
+        }
+        // newIndex
+        else {
+          afterMovedSource[i] = { ...source[oldIndex] };
+        }
+      } else {
+        if (currentValueIndex === oldIndex) {
+          currentValueIndex = currentValueIndex + 1;
+        }
+        afterMovedSource[i] = { ...source[currentValueIndex] };
+        currentValueIndex = currentValueIndex + 1;
+      }
+    }
+
+    console.log(source);
+    console.log(afterMovedSource);
+
+    return afterMovedSource;
+  }
+};
+
 // export const checkValidity = ( value, rules ) => {
 //     let isValid = true;
 //     if ( !rules ) {

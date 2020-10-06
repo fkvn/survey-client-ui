@@ -147,6 +147,29 @@ const updateSection = (state, action) => {
   };
 };
 
+const updateSectionIndex = (state, action) => {
+  if (Number(state.fullSurvey.id) === Number(action.surveyId)) {
+    const updatedSections = funcs
+      .moveItemFromSource(
+        state.fullSurvey.questionSections,
+        action.oldIndex,
+        action.newIndex
+      )
+      .reduce(
+        (newSecs, sec, index) => [...newSecs, { ...sec, sectionIndex: index }],
+        []
+      );
+
+    return {
+      fullSurvey: { ...state.fullSurvey, questionSections: updatedSections },
+    };
+  }
+  return state;
+
+  // console.log(state.fullSurvey.questionSections);
+  // console.log(updatedSections);
+};
+
 const deleteSection = (state, action) => {
   let deletedSectionIndex = Number.MAX_SAFE_INTEGER;
 
@@ -243,31 +266,30 @@ const updateQuestionIndex = (state, action) => {
   const updatedSections = state.fullSurvey.questionSections.reduce(
     (newSec, sec) => [
       ...newSec,
-      sec.id === action.sectionId
+      sec.id === Number(action.sectionId)
         ? {
             ...sec,
-            questions: sec.questions.reduce(
-              (newQs, q) => [
-                ...newQs,
-                q.id === action.questionId
-                  ? {
-                      ...sec.questions[action.newIndex],
-                      questionIndex: action.oldIndex,
-                    }
-                  : q.questionIndex === action.newIndex
-                  ? {
-                      ...sec.questions[action.oldIndex],
-                      questionIndex: action.newIndex,
-                    }
-                  : { ...q },
-              ],
-              []
-            ),
+            questions: funcs
+              .moveItemFromSource(
+                sec.questions,
+                action.oldIndex,
+                action.newIndex
+              )
+              .reduce(
+                (newQues, ques, index) => [
+                  ...newQues,
+                  { ...ques, questionIndex: index },
+                ],
+                []
+              ),
           }
         : { ...sec },
     ],
     []
   );
+
+  // console.log(state.fullSurvey.questionSections);
+  // console.log(updatedSections);
 
   return {
     fullSurvey: { ...state.fullSurvey, questionSections: updatedSections },
@@ -393,8 +415,11 @@ const reducer = (state = initialState, action) => {
       return updateSection(state, action);
     case actionTypes.ADD_SECTION:
       return addSection(state, action);
+    case actionTypes.UPDATE_SECTION_INDEX:
+      return updateSectionIndex(state, action);
     case actionTypes.DELETE_SECTION:
       return deleteSection(state, action);
+
     // survey > section > question
     case actionTypes.ADD_QUESTION:
       return addQuestion(state, action);

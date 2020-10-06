@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import * as actionCreators from "../../../store/actionCreators/Surveys/index";
-import * as funcs from "../../../shared/utility";
 import AddSectionForm from "../../../Components/Form/SectionForm/AddSectionForm";
 import AlertDismissible from "../../../Components/Alert/AlertDismissible";
 
 function CreateSectionBuilder(props) {
-  const { survey = {}, show, onHide, updateSection } = props;
+  const { surveyId, show, onHide, updateSection } = props;
 
   const dispatch = useDispatch();
 
@@ -16,14 +15,12 @@ function CreateSectionBuilder(props) {
   });
 
   const handlerAddSectionSubmit = (newSection) => {
-    dispatch(actionCreators.addSection(survey.id, newSection)).then(
-      (newSec) => {
-        updateSection && updateSection(newSec);
-      }
-    );
+    dispatch(actionCreators.addSection(surveyId, newSection)).then((newSec) => {
+      updateSection && updateSection(newSec);
+    });
   };
 
-  const alert = funcs.isEmpty(survey) && request.showSiteMsg && (
+  const alert = !surveyId && request.showSiteMsg && (
     <AlertDismissible
       // component will be re-render cuz state is upddated when user click close
       onClose={() => setRequest({ ...request, showSiteMsg: false })}
@@ -43,7 +40,7 @@ function CreateSectionBuilder(props) {
   return (
     <>
       {alert}
-      {!funcs.isEmpty(survey) && addSectionModal}{" "}
+      {surveyId && addSectionModal}{" "}
     </>
   );
 }

@@ -3,13 +3,9 @@ import {
   Form,
   Card,
   Button,
-  Tab,
   Row,
   Col,
   Nav,
-  Tabs,
-  Dropdown,
-  ButtonGroup,
   NavDropdown,
 } from "react-bootstrap";
 
@@ -27,24 +23,11 @@ import DeleteSurveyBuilder from "../../Containers/DashboardBuilder/UpdateSurveyB
 
 // // section
 import CreateSectionBuilder from "../../Containers/DashboardBuilder/UpdateSectionBuilders/CreateSectionBuilder";
-import UpdateSectionBuilder from "../../Containers/DashboardBuilder/UpdateSectionBuilders/UpdateSectionBuilder";
-import DeleteSectionBuilder from "../../Containers/DashboardBuilder/UpdateSectionBuilders/DeleteSectionBuilder";
-
-// // question
-import CreateQuestionBuilder from "../../Containers/DashboardBuilder/UpdateQuestionBuilder/CreateQuestionBuilder";
-import UpdateQuestionBuilder from "../../Containers/DashboardBuilder/UpdateQuestionBuilder/UpdateQuestionBuilder";
-import DeleteQuestionBuilder from "../../Containers/DashboardBuilder/UpdateQuestionBuilder/DeleteQuestionBuilder";
-
-// // question MULTIPLE_CHOICE
-import MultipleChoiceDisplay from "../QuestionTypes/DisplayQuestions/MultipleChoiceDisplay";
-import RankingChoiceDisplay from "../QuestionTypes/DisplayQuestions/RankingChoiceDisplay";
-import RatingDisplay from "../QuestionTypes/DisplayQuestions/RatingDisplay";
-import TextDisplay from "../QuestionTypes/DisplayQuestions/TextDisplay";
 
 // Buttons
 import IconButton from "../CustomButton/IconButton";
-import CustomOverlayTrigger from "../CustomOverlayTrigger/CustomOverlayTrigger";
 import PublishSurveyBuilder from "../../Containers/DashboardBuilder/UpdateSurveyBuilders/PublishSurveyBuilder";
+import Sections from "../Sections/Sections";
 
 function FullSurvey(props) {
   const { survey = {} } = props;
@@ -54,27 +37,8 @@ function FullSurvey(props) {
     showESurNameDescModal: false,
     showDeleteSurveyModal: false,
 
-    // section
     showAddSectionModal: false,
-    showESectionDescModal: false,
-    showDeleteSectionModal: false,
-    updatingSection:
-      survey &&
-      survey.questionSections &&
-      survey.questionSections.length > 0 &&
-      survey.questionSections[0],
-
-    // question
-    showAddQuestionModal: false,
-    showUpdateQuestionModal: false,
-    showDeleteQuestionModal: false,
-    updatingQuestion:
-      survey &&
-      survey.questionSections &&
-      survey.questionSections.length > 0 &&
-      survey.questionSections[0].questions &&
-      survey.questionSections[0].questions.length > 0 &&
-      survey.questionSections[0].questions[0],
+    activeSection: 0,
   });
 
   // ============================ Survey Modals ==============================
@@ -213,460 +177,25 @@ function FullSurvey(props) {
     </>
   );
 
-  // ============================ Questions ===========================
-
-  const addQuestionModal = request.showAddQuestionModal && (
-    <CreateQuestionBuilder
-      show={true}
-      onHide={() => setRequest({ ...request, showAddQuestionModal: false })}
-      surveyId={survey && survey.id}
-      section={request.updatingSection}
-      updateQuestion={(newQuestion) =>
-        setRequest({
-          ...request,
-          updatingQuestion: newQuestion,
-          showAddQuestionModal: false,
-        })
-      }
-    ></CreateQuestionBuilder>
-  );
-
-  const updateQuestionModal = request.showUpdateQuestionModal && (
-    <UpdateQuestionBuilder
-      show={true}
-      onHide={() => setRequest({ ...request, showUpdateQuestionModal: false })}
-      surveyId={survey && survey.id}
-      section={request.updatingSection}
-      question={request.updatingQuestion}
-      updateQuestion={(updatedQuetion) =>
-        setRequest({
-          ...request,
-          updatingQuestion: updatedQuetion,
-          showUpdateQuestionModal: false,
-        })
-      }
-    ></UpdateQuestionBuilder>
-  );
-
-  const deleteQuestionModal = request.showDeleteQuestionModal && (
-    <DeleteQuestionBuilder
-      show={true}
-      onHide={() => setRequest({ ...request, showDeleteQuestionModal: false })}
-      surveyId={survey.id}
-      sectionId={request.updatingSection.id}
-      question={request.updatingQuestion}
-      updateQuestion={(deleted) =>
-        deleted &&
-        setRequest({
-          ...request,
-          updatingQuestion:
-            request.updatingQuestion.questionIndex !== 0 &&
-            request.updatingSection.questions.length > 0
-              ? request.updatingSection.questions[0]
-              : null,
-          showDeleteQuestionModal: false,
-        })
-      }
-    ></DeleteQuestionBuilder>
-  );
-
-  const QuestionOptions = ({ section, question }) => {
-    const editQuestionOption = {
-      type: "Edit",
-      title: "Edit Question",
-      onClick: () =>
-        setRequest({
-          ...request,
-          showUpdateQuestionModal: true,
-          updatingSection: section,
-          updatingQuestion: question,
-        }),
-    };
-    const deleteQuestionOptions = {
-      type: "Delete",
-      title: "Delete Question",
-      onClick: () => {
-        setRequest({
-          ...request,
-          showDeleteQuestionModal: true,
-          updatingSection: section,
-          updatingQuestion: question,
-        });
-      },
-    };
-
-    const moveQuestion = (
-      <UpdateQuestionBuilder
-        surveyId={survey.id}
-        moveQuestion={true}
-        question={question}
-        section={section}
-        updateQuestion={(updateQuestion) =>
-          setRequest({
-            ...request,
-            updatingSection: section,
-            updatingQuestion: updateQuestion,
-          })
-        }
-      ></UpdateQuestionBuilder>
-    );
-
-    let allowedOptions = [];
-
-    allowedOptions = [{ ...editQuestionOption }, { ...deleteQuestionOptions }];
-
-    return (
-      <>
-        {allowedOptions.map((op, i) => (
-          <IconButton
-            btnClassName="p-0 m-0 mb-2"
-            type={op.type}
-            title={op.title}
-            onClickHandler={op.onClick}
-            key={i}
-            index={i}
-            disabled={op.disabled}
-          />
-        ))}
-        {moveQuestion}
-      </>
-    );
-  };
-
-  const QuestionDisplayTypes = ({ question }) => {
-    let typeDisplay = null;
-    switch (question.questionType) {
-      case "MULTIPLE_CHOICE":
-        typeDisplay = <MultipleChoiceDisplay question={question} />;
-        break;
-      case "TEXT":
-        typeDisplay = <TextDisplay textLength={question.textLength} />;
-        break;
-      case "RATING":
-        typeDisplay = <RatingDisplay ratingScale={question.ratingScale} />;
-        break;
-      case "RANKING":
-        typeDisplay = (
-          <RankingChoiceDisplay rankingChoices={question.rankingChoices} />
-        );
-        break;
-      default:
-        break;
-    }
-    return typeDisplay;
-  };
-
-  const QuestionsDisplay = ({ section }) => {
-    return (
-      <>
-        <Tab.Container
-          id="left-tabs-example"
-          defaultActiveKey={
-            !section ||
-            !request.updatingQuestion ||
-            section.sectionIndex !== request.updatingSection.sectionIndex ||
-            request.updatingQuestion.questionIndex >= section.questions.length
-              ? 0
-              : request.updatingQuestion.questionIndex
-          }
-        >
-          <Row className=" bg-light rounded p-2 m-2">
-            <Col sm={3}>
-              <Nav variant="pills" className="flex-column">
-                {section.questions.map((question, index) => (
-                  <Nav.Item key={index}>
-                    <Nav.Link eventKey={index}>
-                      <span
-                        onClick={() =>
-                          setRequest({
-                            ...request,
-                            updatingSection: section,
-                            updatingQuestion: question,
-                          })
-                        }
-                      >
-                        Question {index + 1}
-                      </span>
-                      <span className="float-right">
-                        <QuestionOptions
-                          section={section}
-                          question={question}
-                        />
-                      </span>
-                    </Nav.Link>
-                  </Nav.Item>
-                ))}
-              </Nav>
-            </Col>
-            <Col sm={9}>
-              <Tab.Content>
-                {section.questions.map((question, index) => (
-                  <Tab.Pane key={index} eventKey={index}>
-                    <Card>
-                      <Card.Header
-                        className="py-2"
-                        style={{ overflow: "scroll", maxHeight: "320px" }}
-                      >
-                        <div>
-                          <strong>
-                            {index + 1}.{" "}
-                            <span
-                              dangerouslySetInnerHTML={{
-                                __html: funcs.updateQDescImgs(
-                                  question.description,
-                                  question.attachments
-                                ),
-                              }}
-                            />
-                          </strong>
-                        </div>
-                      </Card.Header>
-                      <Card.Body className="mb-0 pb-0">
-                        <QuestionDisplayTypes question={question} />
-                      </Card.Body>
-                    </Card>
-                  </Tab.Pane>
-                ))}
-              </Tab.Content>
-            </Col>
-          </Row>
-        </Tab.Container>
-      </>
-    );
-  };
-
   // ============================ Sections ===========================
 
   const addSectionModal = request.showAddSectionModal && (
     <CreateSectionBuilder
       show={true}
       onHide={() => setRequest({ ...request, showAddSectionModal: false })}
-      survey={survey}
-      updateSection={(newSec) =>
+      surveyId={survey.id}
+      updateSection={(newSec) => {
+        console.log(newSec);
         setRequest({
           ...request,
-          updatingSection: newSec,
+          activeSection: newSec.sectionIndex,
           showAddSectionModal: false,
-        })
-      }
+        });
+      }}
     ></CreateSectionBuilder>
   );
 
-  const updateSectionModal = request.showESectionDescModal && (
-    <UpdateSectionBuilder
-      show={true}
-      onHide={() => setRequest({ ...request, showESectionDescModal: false })}
-      surveyId={survey && survey.id}
-      section={request.updatingSection}
-    ></UpdateSectionBuilder>
-  );
-
-  const deleteSectionModal = request.showDeleteSectionModal && (
-    <DeleteSectionBuilder
-      show={true}
-      onHide={() => setRequest({ ...request, showDeleteSectionModal: false })}
-      surveyId={survey && survey.id}
-      section={request.updatingSection}
-      updateSection={() =>
-        setRequest({
-          ...request,
-          updatingSection:
-            survey.questionSections && survey.questionSections.length > 0
-              ? survey.questionSections[0]
-              : null,
-          showDeleteSectionModal: false,
-        })
-      }
-    ></DeleteSectionBuilder>
-  );
-
-  const SectionOption = ({ sec }) => {
-    const editSectionOption = {
-      type: "Edit",
-      title: "Edit description",
-      onClick: () =>
-        setRequest({
-          ...request,
-          showESectionDescModal: true,
-          updatingSection: sec,
-          updatingQuestion:
-            sec.questions && sec.questions.length > 0
-              ? sec.questions[0]
-              : request.updatingQuestion,
-        }),
-    };
-    const deleteSectionOption = {
-      type: "Delete",
-      title: "Delete section",
-      onClick: () =>
-        setRequest({
-          ...request,
-          showDeleteSectionModal: true,
-          updatingSection: sec,
-          updatingQuestion:
-            sec.questions && sec.questions.length > 0
-              ? sec.questions[0]
-              : request.updatingQuestion,
-        }),
-    };
-
-    const addQuestionOption = {
-      type: "Add",
-      title: "Add question",
-      onClick: () =>
-        setRequest({
-          ...request,
-          showAddQuestionModal: true,
-          updatingSection: sec,
-          updatingQuestion:
-            sec.questions && sec.questions.length > 0
-              ? sec.questions[0]
-              : request.updatingQuestion,
-        }),
-    };
-    let allowedOptions = [];
-
-    allowedOptions = [
-      { ...editSectionOption },
-      { ...addQuestionOption },
-      { ...deleteSectionOption },
-    ];
-
-    return (
-      <>
-        {allowedOptions.map((op, i) => (
-          <IconButton
-            type={op.type}
-            title={op.title}
-            onClickHandler={op.onClick}
-            key={i}
-            index={i}
-          />
-        ))}
-      </>
-    );
-  };
-
-  const SectionTitleBar = ({ sec }) => {
-    return (
-      <>
-        <Dropdown as={ButtonGroup} className="p-0 m-0" size="sm">
-          <Button variant="link" className="text-decoration-none shadow-none">
-            <strong>Section {sec.sectionIndex + 1} </strong>
-          </Button>
-          <CustomOverlayTrigger unitKey={sec.id} title="Options">
-            <Dropdown.Toggle
-              split
-              variant="link"
-              className="text-decoration-none text-info"
-              id="dropdown-split-basic"
-            ></Dropdown.Toggle>
-          </CustomOverlayTrigger>
-          <Dropdown.Menu className="p-0 m-0">
-            <Dropdown.Item as="span">
-              <div className="m-0 p-0">
-                <SectionOption sec={sec} />
-              </div>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </>
-    );
-  };
-
-  // const SurveySections = ({ sections }) => {
-  //   return (
-  //     <>
-  //       <Tabs
-  //         defaultActiveKey={request.updatingSection.sectionIndex}
-  //         transition={false}
-  //         id="noanim-tab-example"
-  //         className="my-4 mx-4 border-bottom "
-  //       >
-  //         {sections.map((sec, index) => (
-  //           <Tab
-  //             eventKey={index}
-  //             title={<SectionTitleBar sec={sec} />}
-  //             key={index}
-  //             className="p-0 m-0"
-  //           >
-  //             <DisplayDescription
-  //               description={sec.description}
-  //               label="Description"
-  //             ></DisplayDescription>
-  //             {sec.questions.length > 0 && <QuestionsDisplay section={sec} />}
-  //             <Form.Group className="m-4">
-  //               <Button
-  //                 variant="success"
-  //                 onClick={() =>
-  //                   setRequest({
-  //                     ...request,
-  //                     showAddQuestionModal: true,
-  //                     updatingSection: sec,
-  //                     updatingQuestion:
-  //                       sec.questions && sec.questions.length > 0
-  //                         ? sec.questions[0]
-  //                         : request.updatingQuestion,
-  //                   })
-  //                 }
-  //               >
-  //                 Add Question
-  //               </Button>
-  //             </Form.Group>
-  //           </Tab>
-  //         ))}
-  //       </Tabs>
-  //     </>
-  //   );
-  // };
-
   // ============================ Main Display ===========================
-
-  const SurveySections = ({ sections }) => {
-    return (
-      <>
-        <Tabs
-          defaultActiveKey={request.updatingSection.sectionIndex}
-          transition={false}
-          id="noanim-tab-example"
-          className="my-4 mx-4 border-bottom "
-        >
-          {sections.map((sec, index) => (
-            <Tab
-              eventKey={index}
-              title={<SectionTitleBar sec={sec} />}
-              key={index}
-              className="p-0 m-0"
-            >
-              <DisplayDescription
-                description={sec.description}
-                label="Description"
-              ></DisplayDescription>
-              {sec.questions.length > 0 && <QuestionsDisplay section={sec} />}
-              <Form.Group className="m-4">
-                <Button
-                  variant="success"
-                  onClick={() =>
-                    setRequest({
-                      ...request,
-                      showAddQuestionModal: true,
-                      updatingSection: sec,
-                      updatingQuestion:
-                        sec.questions && sec.questions.length > 0
-                          ? sec.questions[0]
-                          : request.updatingQuestion,
-                    })
-                  }
-                >
-                  Add Question
-                </Button>
-              </Form.Group>
-            </Tab>
-          ))}
-        </Tabs>
-      </>
-    );
-  };
 
   const DisplayDescription = ({ description, mutedOption, label }) => {
     return (
@@ -687,15 +216,24 @@ function FullSurvey(props) {
 
   const fullSurveyDisplay = (
     <>
-      <Card className="border-0 bg-light">
+      <Card className="bg-white border border-info">
         {surveyTitleNavBar}
         <Card.Body className="p-0">
           <DisplayDescription
             description={survey.description}
             mutedOption={true}
           ></DisplayDescription>
+
           {survey.questionSections && survey.questionSections.length > 0 && (
-            <SurveySections sections={survey.questionSections} />
+            <Sections
+              surveyId={survey.id}
+              sections={survey.questionSections}
+              defaulActiveSection={request.activeSection}
+              updateActiveSectionAfterUpdated={(updatedSectionIndex) => {
+                console.log(updatedSectionIndex);
+                setRequest({ ...request, activeSection: updatedSectionIndex });
+              }}
+            />
           )}
         </Card.Body>
       </Card>
@@ -712,13 +250,6 @@ function FullSurvey(props) {
 
           {/* section option modals */}
           {addSectionModal}
-          {updateSectionModal}
-          {deleteSectionModal}
-
-          {/* question option modals */}
-          {addQuestionModal}
-          {updateQuestionModal}
-          {deleteQuestionModal}
 
           {/* main display */}
           {fullSurveyDisplay}

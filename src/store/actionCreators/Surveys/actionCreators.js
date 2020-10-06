@@ -167,6 +167,19 @@ export const updateSection = (surveyId, sectionId, fields) => {
   };
 };
 
+export const updateSectionIndex = (surveyId, sectionId, oldIndex, newIndex) => {
+  return (dispatch) => {
+    axios
+      .put(`/surveys/${surveyId}/sections/${sectionId}/index`, {
+        index: newIndex,
+      })
+      .then(() =>
+        dispatch(actions.updateSectionIndex(surveyId, oldIndex, newIndex))
+      )
+      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+  };
+};
+
 export const deleteSection = (surveyId, sectionId) => {
   return (dispatch) => {
     return axios
@@ -266,9 +279,7 @@ export const updateQuestionIndex = (
         { index: newIndex }
       )
       .then(() =>
-        dispatch(
-          actions.updateQuestionIndex(sectionId, questionId, oldIndex, newIndex)
-        )
+        dispatch(actions.updateQuestionIndex(sectionId, oldIndex, newIndex))
       )
       .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
   };

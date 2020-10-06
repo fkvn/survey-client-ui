@@ -6,8 +6,11 @@ import * as funcs from "../../../shared/utility";
 import DeleteSectionForm from "../../../Components/Form/SectionForm/DeleteSectionForm";
 
 function DeleteSectionBuilder(props) {
-  const { surveyId, section, show, onHide, updateSection } = props;
+  const { surveyId, section = {}, show, onHide, updateSection } = props;
   const dispatch = useDispatch();
+
+  console.log("delete section ....");
+  console.log(section);
 
   const handlerDeleteSectionSubmit = (sectionId) => {
     if (Number(sectionId) === Number(section.id)) {

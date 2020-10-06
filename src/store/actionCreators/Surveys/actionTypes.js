@@ -8,6 +8,7 @@ export const DELETE_SURVEY = "DELETE_SURVEY";
 // section
 export const ADD_SECTION = "ADD_SECTION";
 export const UPDATE_SECTION = "UPDATE_SECTION";
+export const UPDATE_SECTION_INDEX = "UPDATE_SECTION_INDEX";
 export const DELETE_SECTION = "DELETE_SECTION";
 
 // question
