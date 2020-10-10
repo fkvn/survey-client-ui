@@ -16,7 +16,10 @@ export {
   updateQuestionIndex,
   deleteQuestion,
   // response
+  getResponses,
+  getResponse,
   addResponse,
+  removeResponse,
   // testing
   updateAttachmentObjects,
 } from "./actionCreators";

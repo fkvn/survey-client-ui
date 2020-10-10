@@ -16,6 +16,7 @@ import {
   faTimes,
   faArrowDown,
   faArrowUp,
+  faPollH,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -34,5 +35,6 @@ library.add(
   faCheckCircle,
   faTimes,
   faArrowDown,
-  faArrowUp
+  faArrowUp,
+  faPollH
 );

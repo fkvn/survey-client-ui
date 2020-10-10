@@ -7,6 +7,7 @@ import DashboardBuilder from "../DashboardBuilder/DashboardBuilder";
 import ViewSurveyBuilder from "./ViewSurveyBuilder";
 
 import NotFoundPage from "../../NotFoundPage";
+import ResponseControllerBuilder from "../ResponsesBuilder/ResponseControllerBuilder";
 
 function ControllerBuilder() {
   return (
@@ -17,6 +18,16 @@ function ControllerBuilder() {
         </Route>
         <Route path="/dashboard/mysurveys/survey" exact strict>
           <ViewSurveyBuilder />
+        </Route>
+        <Route
+          path={[
+            "/dashboard/mysurveys/survey/:sId/responses",
+            "/dashboard/mysurveys/survey/:sId/responses/:resId",
+          ]}
+          exact
+          strict
+        >
+          <ResponseControllerBuilder />
         </Route>
         <Route path="/dashboard/mysurveys/editSurvey" exact strict>
           <EditSurveyBuilder />

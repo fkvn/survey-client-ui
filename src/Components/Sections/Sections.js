@@ -188,7 +188,7 @@ function Sections(props) {
   };
 
   const onDragEnd = (result) => {
-    console.log(result);
+    // console.log(result);
     const { type, source, destination, draggableId } = result;
 
     if (!destination || !type) {
@@ -237,55 +237,7 @@ function Sections(props) {
     }
   };
 
-  console.log(request.defaultActiveSecton);
-  console.log(request.activeQuestion);
-
-  // const MainDisplay = ({ sections }) => {
-  //   return (
-  //     <DragDropContext onDragEnd={onDragEnd}>
-  //       <Droppable
-  //         droppableId="all-sections"
-  //         direction="horizontal"
-  //         type="section"
-  //       >
-  //         {(provided) => (
-  //           <div {...provided.droppableProps} ref={provided.innerRef}>
-  //             <Tabs
-  //               activeKey={request.activeSection}
-  //               transition={false}
-  //               id="noanim-tab-example"
-  //               className="my-4 mx-4 border-bottom border border-info"
-  //             >
-  //               {sections.map((sec, index) => (
-  //                 <Draggable draggableid={sec.id} index={index} key={sec.id}>
-  //                   {(provided) => (
-  //                     <div {...provided.draggableProps} ref={provided.innerRef}>
-  //                       <Tab
-  //                         eventKey={index}
-  //                         title={<SectionTitleBar sec={sec} />}
-  //                         key={index}
-  //                         className="p-0 m-0"
-  //                         onSelect={(secIndex) =>
-  //                           setRequest({ ...request, activeSection: secIndex })
-  //                         }
-  //                         {...provided.dragHandleProps}
-  //                       >
-  //                         {/* <Section section={sec} /> */}
-  //                       </Tab>
-  //                     </div>
-  //                   )}
-  //                 </Draggable>
-  //               ))}
-  //             </Tabs>
-  //             {provided.placeholder}
-  //           </div>
-  //         )}
-  //       </Droppable>
-  //     </DragDropContext>
-  //   );
-  // };
-
-  const MainDisplay1 = ({ surveyId, sections }) => (
+  const MainDisplay = ({ surveyId, sections }) => (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
       <div className="mx-5 my-3 bg-light  ">
         <nav className="bg-light">
@@ -377,7 +329,7 @@ function Sections(props) {
       {addQuestionModal}
       {/* {!funcs.isEmpty(sections) && <MainDisplay sections={sections} />} */}
       {surveyId && !funcs.isEmpty(sections) && (
-        <MainDisplay1 surveyId={surveyId} sections={sections} />
+        <MainDisplay surveyId={surveyId} sections={sections} />
       )}
     </>
   );

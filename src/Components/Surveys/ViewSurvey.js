@@ -39,9 +39,20 @@ function ViewSurvey(props) {
       onClick: () => alert("Clone survey"),
     };
 
+    const summaryResultOption = {
+      type: "Summary Result",
+      title: "Summary survey result",
+      onClick: () =>
+        history.push(`/dashboard/mysurveys/survey/${survey.id}/responses`),
+    };
+
     let allowedOptions = [];
 
-    allowedOptions = [{ ...editSurveyOption }, { ...cloneSurveyOption }];
+    allowedOptions = [
+      { ...editSurveyOption },
+      { ...cloneSurveyOption },
+      { ...summaryResultOption },
+    ];
 
     return (
       <>
@@ -84,9 +95,6 @@ function ViewSurvey(props) {
               <Button
                 variant="link"
                 className="text-info px-0 text-decoration-none"
-                onClick={() =>
-                  history.push(`/dashboard/mysurveys/sId=${survey.id}`)
-                }
               >
                 <strong>{survey.name}</strong>
               </Button>

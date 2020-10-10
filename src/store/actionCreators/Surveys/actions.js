@@ -185,10 +185,32 @@ export const deleteQuestion = (sectionId, questionId) => {
 
 // =============== survey > response ===============
 
+export const getResponses = (responses) => {
+  return {
+    type: actionTypes.GET_RESPONSES,
+    responses: responses,
+  };
+};
+
+export const getResponse = (response) => {
+  return {
+    type: actionTypes.GET_RESPONSE,
+    response: response,
+  };
+};
+
 export const addResponse = (surveyId) => {
   return {
     type: actionTypes.ADD_RESPONSE,
     surveyId: surveyId,
+  };
+};
+
+export const removeResponse = (surveyId, responseId) => {
+  return {
+    type: actionTypes.REMOVE_REPSONSE,
+    surveyId: surveyId,
+    responseId: responseId,
   };
 };
 

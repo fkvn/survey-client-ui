@@ -17,7 +17,7 @@ function AlertDismissible(props) {
       variant={type}
       className={alertClassName}
       onClose={onClose}
-      dismissible
+      dismissible={onClose ? true : false}
     >
       {heading ? (
         <Alert.Heading className={headingClassName}>

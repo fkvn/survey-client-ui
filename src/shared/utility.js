@@ -1,6 +1,75 @@
 import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 
+export const STR_TYPE = "str";
+export const DATE_TYPE = "date";
+
+export const toSentenceCase = (inputStr = "") => {
+  if (!inputStr) return "";
+
+  let sentenceCase = "";
+  sentenceCase = inputStr.toLowerCase();
+  sentenceCase = sentenceCase.charAt(0).toUpperCase() + sentenceCase.slice(1);
+  return sentenceCase;
+};
+
+export const getIndexById = (items = [], itemId) => {
+  if (items.length < 1) return [];
+
+  return items.reduce(
+    (index, item, i) => (Number(item.id) === Number(itemId) ? i : index),
+    -1
+  );
+};
+
+export const updateSortedTitles = (
+  currentSortedAttr,
+  currentOrderByAsc,
+  newSortedAttr,
+  newSortedType
+) => {
+  return {
+    sortedAttr: newSortedAttr,
+    sortedType: newSortedType,
+    OrderByAsc: newSortedAttr !== currentSortedAttr ? true : !currentOrderByAsc,
+  };
+};
+
+export const sortedItems = (
+  items = [],
+  sortedAttr,
+  sortedType,
+  orderAsc,
+  grouped = false,
+  groupAttr
+) => {
+  if (items.length < 1) return [];
+
+  let sortedItems = [];
+
+  if (grouped) {
+    sortedItems = items.sort((a, b) => (a[groupAttr] < b[groupAttr] ? 1 : -1));
+  } else {
+    sortedItems = [...items];
+  }
+
+  if (sortedType === DATE_TYPE) {
+    sortedItems = sortedItems.sort((a, b) =>
+      a[sortedAttr] < b[sortedAttr] ? 1 : -1
+    );
+  } else {
+    sortedItems = sortedItems.sort((a, b) =>
+      a[sortedAttr] > b[sortedAttr] ? 1 : -1
+    );
+  }
+
+  if (!orderAsc) {
+    sortedItems = sortedItems.reverse();
+  }
+
+  return sortedItems;
+};
+
 export const updateObject = (oldObject, updatedProperties) => {
   return {
     ...oldObject,
@@ -87,7 +156,7 @@ export const updateQDescImgs = (description, attachments) => {
     const imgStyles = imgSrcUrls[i].getAttribute("style").split(";");
     for (let j = 0; j < imgStyles.length; j++) {
       const style = imgStyles[j].split(":");
-      // console.log(style);
+
       if (style[0] === "height") {
         imgSrcUrls[i].setAttribute("height", style[1].trim());
       } else if (style[0] === "width") {
@@ -139,9 +208,6 @@ export const updateQDescImgs = (description, attachments) => {
       classNameValue ? classNameValue + " my-2" : "my-2"
     );
   }
-
-  // debug purpose
-  // console.log(element.innerHTML);
 
   return element.innerHTML;
 };
@@ -213,8 +279,6 @@ export const diffArr = (a1, a2) => {
 };
 
 export const moveItemFromSource = (source = [], oldIndex = 0, newIndex = 0) => {
-  console.log(oldIndex);
-  console.log(newIndex);
   const afterMovedSource = [...source];
 
   if (oldIndex !== newIndex && afterMovedSource.length > 0) {
@@ -241,9 +305,6 @@ export const moveItemFromSource = (source = [], oldIndex = 0, newIndex = 0) => {
         currentValueIndex = currentValueIndex + 1;
       }
     }
-
-    console.log(source);
-    console.log(afterMovedSource);
 
     return afterMovedSource;
   }

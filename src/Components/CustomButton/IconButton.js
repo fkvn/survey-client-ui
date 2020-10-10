@@ -51,6 +51,11 @@ function IconButton(props) {
       color: "text-primary",
     },
     {
+      name: "Summary",
+      icon: ["fas", "poll-h"],
+      color: "text-primary",
+    },
+    {
       name: "Remove",
       icon: ["fas", "minus-circle"],
       color: "text-danger",

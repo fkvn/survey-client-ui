@@ -27,9 +27,8 @@ import * as funcs from "../../shared/utility";
 const initialState = {
   openedSurveys: null,
   surveys: null,
-  // surveyResponses: null,
-  // fullSurveyResponse: null,
-  // fullSurvey: null,
+  responses: null,
+  response: null,
   attachmentObjects: {},
   err: false,
   errMsg: "",
@@ -148,7 +147,10 @@ const updateSection = (state, action) => {
 };
 
 const updateSectionIndex = (state, action) => {
-  if (Number(state.fullSurvey.id) === Number(action.surveyId)) {
+  if (
+    !funcs.isEmpty(state.fullSurvey) &&
+    Number(state.fullSurvey.id) === Number(action.surveyId)
+  ) {
     const updatedSections = funcs
       .moveItemFromSource(
         state.fullSurvey.questionSections,
@@ -165,9 +167,6 @@ const updateSectionIndex = (state, action) => {
     };
   }
   return state;
-
-  // console.log(state.fullSurvey.questionSections);
-  // console.log(updatedSections);
 };
 
 const deleteSection = (state, action) => {
@@ -288,9 +287,6 @@ const updateQuestionIndex = (state, action) => {
     []
   );
 
-  // console.log(state.fullSurvey.questionSections);
-  // console.log(updatedSections);
-
   return {
     fullSurvey: { ...state.fullSurvey, questionSections: updatedSections },
   };
@@ -338,6 +334,18 @@ const deleteQuestion = (state, action) => {
 
 // ================== survey response =========================
 
+const getResponses = (state, action) => {
+  return updateObject(state, {
+    responses: action.responses,
+  });
+};
+
+const getResponse = (state, action) => {
+  return updateObject(state, {
+    response: action.response,
+  });
+};
+
 const addResponse = (state, action) => {
   if (state.surveys) {
     const updatedSurveys = state.surveys.reduce((nSurveys, survey) => {
@@ -356,6 +364,20 @@ const addResponse = (state, action) => {
     });
   }
   return state;
+};
+
+const removeResponse = (state, action) => {
+  const responses = state.responses ? state.responses : [];
+
+  if (responses.length < 1) return state;
+
+  const updatedResponses = responses.filter(
+    (res) => Number(res.id) !== Number(action.responseId)
+  );
+
+  return updateObject(state, {
+    responses: updatedResponses,
+  });
 };
 
 // ================== error =========================
@@ -431,9 +453,14 @@ const reducer = (state = initialState, action) => {
       return deleteQuestion(state, action);
 
     // survey > response
+    case actionTypes.GET_RESPONSES:
+      return getResponses(state, action);
+    case actionTypes.GET_RESPONSE:
+      return getResponse(state, action);
     case actionTypes.ADD_RESPONSE:
       return addResponse(state, action);
-
+    case actionTypes.REMOVE_REPSONSE:
+      return removeResponse(state, action);
     // Error
     case actionTypes.FETCH_SURVEYS_FAILED:
       return fetchSurveysFailed(state, action);

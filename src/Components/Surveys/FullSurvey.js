@@ -185,7 +185,6 @@ function FullSurvey(props) {
       onHide={() => setRequest({ ...request, showAddSectionModal: false })}
       surveyId={survey.id}
       updateSection={(newSec) => {
-        console.log(newSec);
         setRequest({
           ...request,
           activeSection: newSec.sectionIndex,
@@ -230,7 +229,6 @@ function FullSurvey(props) {
               sections={survey.questionSections}
               defaulActiveSection={request.activeSection}
               updateActiveSectionAfterUpdated={(updatedSectionIndex) => {
-                console.log(updatedSectionIndex);
                 setRequest({ ...request, activeSection: updatedSectionIndex });
               }}
             />

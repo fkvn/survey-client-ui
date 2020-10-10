@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Redirect, useLocation } from "react-router-dom";
 import ReactLoading from "react-loading";
 
 import * as actionCreators from "../../store/actionCreators/Surveys/index";
@@ -8,6 +9,8 @@ import AlertDismissible from "../../Components/Alert/AlertDismissible";
 
 function MySurveysBuilder() {
   const dispatch = useDispatch();
+
+  const params = new URLSearchParams(useLocation().search).entries();
 
   const surveys = useSelector((state) => state.surveyBuilder.surveys);
 
@@ -64,6 +67,13 @@ function MySurveysBuilder() {
 
   return (
     <>
+      {
+        !params.next().done && (
+          // history.push("/dashboard/mysurveys");
+          <Redirect to="/dashboard/mysurveys" />
+        )
+        // return;
+      }
       <div className="m-5">
         {siteMsgComp}
         {!loading.current && surveys ? (

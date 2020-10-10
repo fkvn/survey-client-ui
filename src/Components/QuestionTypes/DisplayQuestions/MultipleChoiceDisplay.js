@@ -51,8 +51,18 @@ function MultipleChoiceDisplay(props) {
         );
       })}
       {type === "checkbox" &&
-        question.maxSelections > 1 &&
-        question.maxSelections < question.choices.length && (
+        question.minSelections > 0 &&
+        question.minSelections <= question.choices.length && (
+          <Form.Group className="mt-0 pt-0">
+            <small className="text-danger">
+              <strong>Min Selections: {question.minSelections}</strong>
+            </small>
+          </Form.Group>
+        )}
+
+      {type === "checkbox" &&
+        question.maxSelections > 0 &&
+        question.maxSelections <= question.choices.length && (
           <Form.Group className="mb-2 mt-0 pt-0">
             <small className="text-danger">
               <strong>Max Selections: {question.maxSelections}</strong>

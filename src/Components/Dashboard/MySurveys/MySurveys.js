@@ -24,8 +24,9 @@ import WebLinkSurvey from "../../WebLink/WebLinkSurvey";
 import IconButton from "../../CustomButton/IconButton";
 
 function MySurveys(props) {
-  const { surveys = [] } = props;
   const history = useHistory();
+
+  const { surveys = [] } = props;
 
   const [request, setRequest] = useState({
     sortedBy: "",
@@ -122,7 +123,8 @@ function MySurveys(props) {
     const summaryResultOption = {
       type: "Summary Result",
       title: "Summary survey result",
-      onClick: () => alert("Summary Result"),
+      onClick: () =>
+        history.push(`/dashboard/mysurveys/survey/${survey.id}/responses`),
     };
 
     const editSurveyOption = {

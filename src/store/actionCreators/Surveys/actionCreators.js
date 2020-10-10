@@ -298,6 +298,27 @@ export const deleteQuestion = (surveyId, sectionId, questionId) => {
 
 // =============== survey > response ===============
 
+export const getResponses = (surveyId) => {
+  return (dispatch) => {
+    axios
+      .get(`surveys/${surveyId}/responses`)
+      .then((responses) => dispatch(actions.getResponses(responses.data)))
+      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+  };
+};
+
+export const getResponse = (surveyId, responseId) => {
+  return (dispatch) => {
+    return axios
+      .get(`surveys/${surveyId}/responses/${responseId}`)
+      .then((response) => {
+        dispatch(actions.getResponse(response.data));
+        return response.data;
+      })
+      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+  };
+};
+
 export const addResponse = (surveyId, response) => {
   return async (dispatch) => {
     const newResponse = await axios
@@ -312,6 +333,16 @@ export const addResponse = (surveyId, response) => {
   };
 };
 
+export const removeResponse = (surveyId, responseId) => {
+  return (dispatch) => {
+    return axios
+      .delete(`surveys/${surveyId}/responses/${responseId}`)
+      .then(() => dispatch(actions.removeResponse(surveyId, responseId)))
+      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+  };
+};
+
+// =============== others ===============
 export const updateAttachmentObjects = (imgObject) => {
   return (dispatch) => {
     dispatch(actions.updateAttachmentObjects(imgObject));
