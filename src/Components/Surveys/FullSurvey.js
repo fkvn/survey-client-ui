@@ -151,7 +151,7 @@ function FullSurvey(props) {
                 variant="link"
                 className="text-info px-0 text-decoration-none"
                 onClick={() =>
-                  history.push(`/dashboard/mysurveys?sId=${survey.id}`)
+                  history.push(`/dashboard/mysurveys/survey?sId=${survey.id}`)
                 }
               >
                 <strong>{survey.name}</strong>

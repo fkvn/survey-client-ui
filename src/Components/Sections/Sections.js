@@ -188,7 +188,7 @@ function Sections(props) {
   };
 
   const onDragEnd = (result) => {
-    // console.log(result);
+    console.log("section side");
     const { type, source, destination, draggableId } = result;
 
     if (!destination || !type) {
@@ -217,29 +217,30 @@ function Sections(props) {
         )
       );
       updateActiveSectionAfterUpdated(newIndex);
-    } else if (type === "question") {
-      const sectionId = destination.droppableId;
-      const questionId = draggableId;
-      const oldIndex = source.index;
-      const newIndex = destination.index;
-
-      dispatch(
-        actionCreators.updateQuestionIndex(
-          surveyId,
-          sectionId,
-          questionId,
-          oldIndex,
-          newIndex
-        )
-      );
-
-      updateRequest({ activeQuestion: newIndex });
     }
+    // else if (type === "question") {
+    //   const sectionId = destination.droppableId;
+    //   const questionId = draggableId;
+    //   const oldIndex = source.index;
+    //   const newIndex = destination.index;
+
+    //   dispatch(
+    //     actionCreators.updateQuestionIndex(
+    //       surveyId,
+    //       sectionId,
+    //       questionId,
+    //       oldIndex,
+    //       newIndex
+    //     )
+    //   );
+
+    //   updateRequest({ activeQuestion: newIndex });
+    // }
   };
 
   const MainDisplay = ({ surveyId, sections }) => (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      <div className="mx-5 my-3 bg-light  ">
+      <div className="mx-5 my-3 bg-white border  ">
         <nav className="bg-light">
           <Droppable
             droppableId={`${surveyId}`}

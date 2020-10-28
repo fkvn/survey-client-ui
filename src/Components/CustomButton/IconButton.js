@@ -70,6 +70,11 @@ function IconButton(props) {
       icon: ["fas", "arrow-down"],
       color: "text-info",
     },
+    {
+      name: "Toggle Expand",
+      icon: ["fas", "compress-arrows-alt"],
+      color: "text-secondary",
+    },
   ];
 
   const selectedButton = options.reduce(

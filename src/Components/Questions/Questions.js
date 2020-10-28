@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Nav, Row, Tab } from "react-bootstrap";
+import { Accordion, Button, Card, Col, Nav, Row } from "react-bootstrap";
 import * as funcs from "../../shared/utility";
-import { Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import MultipleChoiceDisplay from "../QuestionTypes/DisplayQuestions/MultipleChoiceDisplay";
 import RankingChoiceDisplay from "../QuestionTypes/DisplayQuestions/RankingChoiceDisplay";
@@ -10,6 +10,11 @@ import TextDisplay from "../QuestionTypes/DisplayQuestions/TextDisplay";
 import IconButton from "../CustomButton/IconButton";
 import DeleteQuestionBuilder from "../../Containers/DashboardBuilder/UpdateQuestionBuilder/DeleteQuestionBuilder";
 import UpdateQuestionBuilder from "../../Containers/DashboardBuilder/UpdateQuestionBuilder/UpdateQuestionBuilder";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { useDispatch } from "react-redux";
+import * as actionCreators from "../../store/actionCreators/Surveys/index";
+import CustomOverlayTrigger from "../CustomOverlayTrigger/CustomOverlayTrigger";
 
 function Questions(props) {
   const {
@@ -29,6 +34,14 @@ function Questions(props) {
     showDeleteQuestionModal: false,
   });
 
+  const dispatch = useDispatch();
+
+  let refs = [];
+
+  for (let i = 0; i < questions.length; i++) {
+    refs = [...refs, React.createRef()];
+  }
+
   const updateRequest = (updateAttributes) => {
     setRequest({ ...request, ...updateAttributes });
   };
@@ -38,6 +51,25 @@ function Questions(props) {
       updateRequest({
         defaulActiveSection: defaultActiveQuestion,
         activeQuestion: defaultActiveQuestion,
+      });
+    }
+    if (
+      refs &&
+      refs[request.activeQuestion] &&
+      refs[request.activeQuestion].current
+    ) {
+      let ref = refs[request.activeQuestion];
+      ref.current.setAttribute(
+        "style",
+        `  border-color: #28a745;
+            box-shadow: 0 0 0 0.3rem rgba(40, 167, 69, 0.25);
+        `
+      );
+
+      ref.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
       });
     }
   });
@@ -88,15 +120,15 @@ function Questions(props) {
         }),
     };
 
-    const moveQuestion = (
-      <UpdateQuestionBuilder
-        surveyId={surveyId}
-        moveQuestion={true}
-        question={question}
-        section={section}
-        updateQuestion={updateQuestionAfterUpdated}
-      ></UpdateQuestionBuilder>
-    );
+    // const moveQuestion = (
+    //   <UpdateQuestionBuilder
+    //     surveyId={surveyId}
+    //     moveQuestion={true}
+    //     question={question}
+    //     section={section}
+    //     updateQuestion={updateQuestionAfterUpdated}
+    //   ></UpdateQuestionBuilder>
+    // );
 
     let allowedOptions = [];
 
@@ -115,7 +147,7 @@ function Questions(props) {
             disabled={op.disabled}
           />
         ))}
-        {moveQuestion}
+        {/* {moveQuestion} */}
       </>
     );
   };
@@ -143,80 +175,232 @@ function Questions(props) {
     return typeDisplay;
   };
 
-  const MainDisplay = ({ questions }) => (
-    <>
-      <Tab.Container
-        id="all-questions-tab"
-        activeKey={
-          request.activeQuestion && request.activeQuestion < questions.length
-            ? request.activeQuestion
-            : 0
-        }
-      >
-        <Droppable droppableId={`${section.id}`} type="question">
-          {(provided) => (
-            <Row
-              className=" bg-light rounded p-2 m-2 mb-4"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              <Col xs={12} xl={3}>
-                <Nav variant="pills" className="flex-column">
-                  {questions.map(
-                    (question, index) =>
-                      question && (
-                        <Draggable
-                          draggableId={`${question.id}`}
-                          index={index}
-                          key={question.id}
+  console.log(request.activeQuestion);
+
+  const onDragEnd = (result) => {
+    console.log("question side result dnd");
+    const { type, source, destination, draggableId } = result;
+
+    if (!destination || !type) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+    if (type === "question") {
+      const sectionId = destination.droppableId;
+      const questionId = draggableId;
+      const oldIndex = source.index;
+      const newIndex = destination.index;
+
+      dispatch(
+        actionCreators.updateQuestionIndex(
+          surveyId,
+          sectionId,
+          questionId,
+          oldIndex,
+          newIndex
+        )
+      );
+
+      // updateRequest({ activeQuestion: newIndex });
+      updateQuestionAfterUpdated({ questionIndex: newIndex });
+    }
+  };
+
+  const AccordionDisplay = ({ questions = [] }) => {
+    return (
+      <>
+        <DragDropContext onDragEnd={onDragEnd}>
+          {questions.length > 0 && (
+            <Droppable droppableId={`${section.id}`} type="question">
+              {(provided) => (
+                <Row
+                  className="m-3 mt-5"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  <Col xs={12} lg={2}>
+                    <Accordion defaultActiveKey="0" className="sticky-top">
+                      <Card className="border-0">
+                        <Accordion.Toggle
+                          as={Card.Header}
+                          eventKey="0"
+                          className="p-2 m-2 border-0 "
                         >
-                          {(provided) => (
-                            <Nav.Item
+                          <strong> Questions List</strong>
+                        </Accordion.Toggle>
+                        <Accordion.Collapse eventKey="0">
+                          <Card.Body className="m-0 p-0">
+                            <Nav className="flex-column">
+                              {questions.map((_, index) => (
+                                <Nav.Link
+                                  key={index}
+                                  onClick={() => {
+                                    refs.map((ref, i) => {
+                                      if (ref.current) {
+                                        if (i === index) {
+                                          ref.current.setAttribute(
+                                            "style",
+                                            `  border-color: #28a745;
+                                          box-shadow: 0 0 0 0.3rem rgba(40, 167, 69, 0.25);
+                                      `
+                                          );
+
+                                          ref.current.scrollIntoView({
+                                            behavior: "smooth",
+                                            block: "center",
+                                            inline: "center",
+                                          });
+                                        } else {
+                                          ref.current.setAttribute("style", "");
+                                        }
+                                      }
+                                      return null;
+                                    });
+                                  }}
+                                >
+                                  <strong>Question {index + 1}</strong>
+                                </Nav.Link>
+                              ))}
+                            </Nav>
+                            <Button
+                              variant="info"
+                              className="ml-3 mt-3  "
+                              size="sm"
+                              onClick={() => {
+                                refs.map((ref, i) => {
+                                  if (ref.current) {
+                                    const content =
+                                      ref.current.firstChild.childNodes[1];
+
+                                    content.classList.toggle("show", true);
+                                  }
+                                  return null;
+                                });
+                              }}
+                            >
+                              Show all
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              className="ml-3 mt-3  "
+                              size="sm"
+                              onClick={() => {
+                                refs.map((ref, i) => {
+                                  if (ref.current) {
+                                    const content =
+                                      ref.current.firstChild.childNodes[1];
+
+                                    content.classList.toggle("show", false);
+                                  }
+                                  return null;
+                                });
+                              }}
+                            >
+                              Close all
+                            </Button>
+                          </Card.Body>
+                        </Accordion.Collapse>
+                      </Card>
+                    </Accordion>
+                  </Col>
+                  <Col xs={12} lg={10}>
+                    {questions.map((question, index) => (
+                      <Draggable
+                        draggableId={`${question.id}`}
+                        index={index}
+                        key={question.id}
+                      >
+                        {(provided) => (
+                          <Accordion
+                            defaultActiveKey={`${index}`}
+                            ref={refs[index]}
+                          >
+                            <Card
+                              className="mb-4 mt-2 border"
                               {...provided.draggableProps}
                               ref={provided.innerRef}
-                              key={index}
                             >
-                              <Nav.Link
-                                eventKey={index}
-                                {...provided.dragHandleProps}
-                                className="p-0 m-0"
-                              >
+                              <Card.Header className="m-0 p-2">
                                 <div
-                                  className="d-inline-block h-100 p-2 m-0"
-                                  onClick={() =>
-                                    updateRequest({
-                                      activeQuestion: index,
-                                      aaaa: true,
-                                    })
-                                  }
+                                  {...provided.dragHandleProps}
+                                  className="d-inline-block mr-2"
                                 >
-                                  Question {index + 1}
+                                  <CustomOverlayTrigger
+                                    unitKey={question.id}
+                                    title="Select to move question"
+                                  >
+                                    <FontAwesomeIcon icon={["fas", "bars"]} />
+                                  </CustomOverlayTrigger>
                                 </div>
-                                <span className="float-right p-2">
+
+                                <div
+                                  className="text-info d-inline-block"
+                                  onClick={() => {
+                                    refs.map((ref, i) => {
+                                      if (ref.current) {
+                                        if (i === index) {
+                                          ref.current.setAttribute(
+                                            "style",
+                                            `  border-color: #28a745;
+                                          box-shadow: 0 0 0 0.3rem rgba(40, 167, 69, 0.25);
+                                      `
+                                          );
+
+                                          ref.current.scrollIntoView({
+                                            behavior: "smooth",
+                                            block: "center",
+                                            inline: "center",
+                                          });
+                                        } else {
+                                          ref.current.setAttribute("style", "");
+                                        }
+                                      }
+                                      return null;
+                                    });
+                                  }}
+                                >
+                                  <strong> Question {index + 1}</strong>
+                                </div>
+
+                                <div className="d-inline-block float-right mb-0 pb-0">
                                   <QuestionOptions question={question} />
-                                </span>
-                              </Nav.Link>
-                            </Nav.Item>
-                          )}
-                        </Draggable>
-                      )
-                  )}
-                </Nav>
-              </Col>
-              <Col xs={12} xl={9}>
-                <Tab.Content>
-                  {questions.map(
-                    (question, index) =>
-                      question && (
-                        <Tab.Pane key={index} eventKey={index}>
-                          <Card>
-                            <Card.Header
-                              className="py-2"
-                              style={{ overflow: "scroll", maxHeight: "320px" }}
-                            >
-                              <div>
-                                <strong>
-                                  {index + 1}.{" "}
+                                  {/* <Accordion.Toggle
+                                    as={Card.Text}
+                                    className="text-info d-inline-block"
+                                    eventKey={`${index}`}
+                                  >
+                                    <IconButton
+                                      btnClassName="p-0 m-0 mb-2"
+                                      type="Toggle Expand"
+                                      title="Toggle expand question"
+                                    />
+                                  </Accordion.Toggle> */}
+                                  <span>
+                                    <IconButton
+                                      btnClassName="p-0 m-0 mb-2"
+                                      onClickHandler={() => {
+                                        if (refs[index].current) {
+                                          const content =
+                                            refs[index].current.firstChild
+                                              .childNodes[1];
+
+                                          content.classList.toggle("show");
+                                        }
+                                      }}
+                                      type="Toggle Expand"
+                                      title="Toggle expand question"
+                                    />
+                                  </span>
+                                </div>
+                              </Card.Header>
+                              <Accordion.Collapse eventKey={`${index}`}>
+                                <Card.Body className="m-0">
                                   <span
                                     dangerouslySetInnerHTML={{
                                       __html: funcs.updateQDescImgs(
@@ -225,32 +409,34 @@ function Questions(props) {
                                       ),
                                     }}
                                   />
-                                </strong>
-                              </div>
-                            </Card.Header>
-                            <Card.Body className="mb-0 pb-0">
-                              <QuestionDisplayTypes question={question} />
-                            </Card.Body>
-                          </Card>
-                        </Tab.Pane>
-                      )
-                  )}
-                </Tab.Content>
-              </Col>
-              {provided.placeholder}
-            </Row>
+                                  <hr />
+                                  <QuestionDisplayTypes question={question} />
+                                </Card.Body>
+                              </Accordion.Collapse>
+                            </Card>
+                          </Accordion>
+                        )}
+                      </Draggable>
+                    ))}
+                  </Col>
+                  {provided.placeholder}
+                </Row>
+              )}
+            </Droppable>
           )}
-        </Droppable>
-      </Tab.Container>{" "}
-    </>
-  );
+        </DragDropContext>
+      </>
+    );
+  };
 
   return (
     <>
       {updateQuestionModal}
       {deleteQuestionModal}
       {surveyId && section.id && !funcs.isEmpty(questions) && (
-        <MainDisplay questions={questions} />
+        // <MainDisplay questions={questions} />
+        <AccordionDisplay questions={questions} />
+        // <ArrDivDisplay questions={questions} />
       )}
     </>
   );

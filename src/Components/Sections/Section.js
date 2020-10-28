@@ -35,7 +35,7 @@ function Section(props) {
           updateQuestionAfterUpdated={updateQuestionAfterUpdated}
         />
       )}
-      <Form.Group className="">
+      <Form.Group className={sec.questions.length > 0 ? "ml-5" : ""}>
         <Button variant="success" onClick={addQuestionShow}>
           Add Question
         </Button>

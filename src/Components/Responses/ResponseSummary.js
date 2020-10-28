@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import DeleteResponseBuilder from "../../Containers/ResponsesBuilder/UpdateResponseBuilders/DeleteResponseBuilder";
 
 import * as funcs from "../../shared/utility";
@@ -9,6 +9,7 @@ import CustomOverlayTrigger from "../CustomOverlayTrigger/CustomOverlayTrigger";
 
 function ResponseSummary(props) {
   const { survey = {}, responses = [] } = props;
+  const history = useHistory();
 
   const [request, setRequest] = useState({
     activeResponse: null,
@@ -59,7 +60,10 @@ function ResponseSummary(props) {
     const individualResponseOption = {
       type: "Summary",
       title: "Individual response summary",
-      onClick: () => alert("Individual response summary"),
+      onClick: () =>
+        history.push(
+          `/dashboard/mysurveys/survey/${survey.id}/responses/${response.id}`
+        ),
     };
 
     const deleteResponseOption = {

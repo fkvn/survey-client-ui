@@ -147,52 +147,34 @@ function ViewSurvey(props) {
   const QuestionsDisplay = ({ section }) => {
     return (
       <>
-        <Tab.Container id="left-tabs-example" defaultActiveKey={0}>
-          <Row className=" bg-light rounded p-2 m-2">
-            <Col sm={2}>
-              <Nav variant="pills" className="flex-column">
-                {section.questions.map((_, index) => (
-                  <Nav.Item key={index}>
-                    <Nav.Link eventKey={index}>
-                      <span>Question {index + 1}</span>
-                    </Nav.Link>
-                  </Nav.Item>
-                ))}
-              </Nav>
-            </Col>
-            <Col sm={10}>
-              <Tab.Content>
-                {section.questions.map((question, index) => (
-                  <Tab.Pane key={index} eventKey={index}>
-                    <Card>
-                      <Card.Header
-                        className="py-2"
-                        style={{ overflow: "scroll", maxHeight: "320px" }}
-                      >
-                        <div>
-                          <strong>
-                            {index + 1}.{" "}
-                            <span
-                              dangerouslySetInnerHTML={{
-                                __html: funcs.updateQDescImgs(
-                                  question.description,
-                                  question.attachments
-                                ),
-                              }}
-                            />
-                          </strong>
-                        </div>
-                      </Card.Header>
-                      <Card.Body className="pb-0">
-                        <QuestionDisplayTypes question={question} />
-                      </Card.Body>
-                    </Card>
-                  </Tab.Pane>
-                ))}
-              </Tab.Content>
-            </Col>
-          </Row>
-        </Tab.Container>
+        <Row className=" bg-white rounded m-2">
+          <Col>
+            {section.questions.map((question, index) => (
+              <Card key={index} className="mb-3">
+                <Card.Header
+                  className="py-2"
+                  style={{ overflow: "scroll", maxHeight: "320px" }}
+                >
+                  <div>
+                    <strong>Question {index + 1}. </strong>
+                  </div>
+                </Card.Header>
+                <Card.Body className="pb-0">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: funcs.updateQDescImgs(
+                        question.description,
+                        question.attachments
+                      ),
+                    }}
+                  />
+                  <hr className="border" />
+                  <QuestionDisplayTypes question={question} />
+                </Card.Body>
+              </Card>
+            ))}
+          </Col>
+        </Row>
       </>
     );
   };
@@ -217,7 +199,7 @@ function ViewSurvey(props) {
                 </strong>
               }
               key={index}
-              className="p-0 m-0"
+              className="p-0 m-0 bg-white"
             >
               <DisplayDescription
                 description={sec.description}
@@ -253,7 +235,7 @@ function ViewSurvey(props) {
 
   const viewSurveyDisplay = (
     <>
-      <Card className="border-0 bg-light">
+      <Card className="border">
         {surveyTitleNavBar}
         <Card.Body className="p-0">
           <DisplayDescription
