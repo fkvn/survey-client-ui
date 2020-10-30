@@ -18,7 +18,7 @@ function SubmitSurveyBuilder(props) {
   const err = useSelector((state) => state.surveyBuilder.err);
   const errMsg = useSelector((state) => state.surveyBuilder.errMsg);
 
-  console.log("SubmitSurveyBuilder render");
+  // console.log("SubmitSurveyBuilder render");
   const loading = useRef(true);
 
   const [request, setRequest] = useState({
@@ -95,6 +95,7 @@ function SubmitSurveyBuilder(props) {
     // console.log(response);
     dispatch(actionCreators.addResponse(fullSurvey.id, response)).then((id) => {
       if (id) {
+        localStorage.removeItem(`survey:${fullSurvey.id}`);
         history.push(`/surveys/response/successful`);
       } else {
         history.push(`/surveys/response/unsuccessful`);

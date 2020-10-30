@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   Card,
@@ -24,23 +24,36 @@ function SurveyResponse(props) {
     onSubmitResponse,
   } = props;
 
+  let defaultSResponse = null;
+  let defaultUpdatedRankingLists = null;
+
+  if (JSON.parse(localStorage.getItem(`survey:${survey.id}`))) {
+    const defaultSurveyResponse = JSON.parse(
+      localStorage.getItem(`survey:${survey.id}`)
+    );
+    defaultSResponse = defaultSurveyResponse.sResponse;
+    defaultUpdatedRankingLists = defaultSurveyResponse.updatedRankingLists;
+  }
+
   const [request, setRequest] = useState({
+    surveyId: survey && survey.id,
     validated: false,
-    sResponse: {
-      answerSections: survey.questionSections.reduce(
-        (nSec, sec) => [
-          ...nSec,
-          {
-            answers: sec.questions.reduce(
-              (nAns, q) => [...nAns, { answerType: q.questionType }],
-              []
-            ),
-          },
-        ],
-        []
-      ),
-    },
-    updatedRankingLists: null,
+    sResponse: defaultSResponse ? defaultSResponse : { answerSections: [] },
+    // sResponse: {
+    //   answerSections: survey.questionSections.reduce(
+    //     (nSec, sec) => [
+    //       ...nSec,
+    //       {
+    //         answers: sec.questions.reduce(
+    //           (nAns, q) => [...nAns, { answerType: q.questionType }],
+    //           []
+    //         ),
+    //       },
+    //     ],
+    //     []
+    //   ),
+    // },
+    updatedRankingLists: defaultUpdatedRankingLists,
     currentSecIndex: null,
     currentQIndex: null,
   });
@@ -93,9 +106,6 @@ function SurveyResponse(props) {
     });
   }
 
-  // console.log("validated: " + request.validated);
-  // console.log(request.sResponse);
-
   // =================== functions ===================
 
   const updatedResponse = (secIndex, qIndex, answer, updatedRankingLists) => {
@@ -120,6 +130,17 @@ function SurveyResponse(props) {
     const updatedResponse = {
       answerSections: updatedAnswerSections,
     };
+
+    localStorage.setItem(
+      `survey:${survey.id}`,
+      JSON.stringify({
+        sResponse: updatedResponse,
+        updatedRankingLists: {
+          ...request.updatedRankingLists,
+          [`${secIndex}-${qIndex}`]: updatedRankingLists,
+        },
+      })
+    );
 
     setRequest({
       ...request,
@@ -418,19 +439,16 @@ function SurveyResponse(props) {
                   <Tab
                     eventKey={index}
                     title={
-                      <span>
-                        <span
-                          className={
-                            request.validated
-                              ? validateSection(index) !== sec.questions.length
-                                ? "text-danger"
-                                : "text-success"
-                              : ""
-                          }
-                        >
-                          Section {index + 1}
-                        </span>
-                        - {validateSection(index)} / {sec.questions.length}
+                      <span
+                        className={
+                          request.validated
+                            ? validateSection(index) !== sec.questions.length
+                              ? "text-danger"
+                              : "text-success"
+                            : ""
+                        }
+                      >
+                        Section {index + 1}
                       </span>
                     }
                     key={index}
