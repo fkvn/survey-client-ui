@@ -40,7 +40,7 @@ function InvRatingDisplay(props) {
 
     return (
       <>
-        <InputGroup className="mb-2 pb-2 mt-5">
+        <InputGroup className="mb-2 pb-2 mt-3">
           <InputGroup.Prepend>
             <InputGroup.Text className="text-danger">1</InputGroup.Text>
           </InputGroup.Prepend>

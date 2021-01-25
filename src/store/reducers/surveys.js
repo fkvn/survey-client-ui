@@ -27,8 +27,10 @@ import * as funcs from "../../shared/utility";
 const initialState = {
   openedSurveys: null,
   surveys: null,
+  fullSurvey: null,
   responses: null,
   response: null,
+  questionResultSummaries: null,
   attachmentObjects: {},
   err: false,
   errMsg: "",
@@ -383,15 +385,10 @@ const removeResponse = (state, action) => {
 // ================== error =========================
 
 const fetchSurveysFailed = (state, action) => {
-  // return updateObject(state, {
-  //   err: true,
-  //   errMsg: action.errMsg,
-  // });
-
-  return {
+  return updateObject(state, {
     err: true,
     errMsg: action.errMsg,
-  };
+  });
 };
 
 // ================== attachment objects =========================

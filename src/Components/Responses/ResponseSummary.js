@@ -99,10 +99,19 @@ function ResponseSummary(props) {
     );
   };
 
+  const responseGroups = (
+    <Link to={`/dashboard/mysurveys/survey/${survey.id}/responses/groups`}>
+      <Button className="mt-3 mb-4" variant="primary" size="sm">
+        View responses in Groups
+      </Button>
+    </Link>
+  );
+
   const MainDisplay = ({ responses }) => {
     return (
       <>
-        <Table striped bordered hover>
+        {responseGroups}
+        <Table striped bordered hover className="mt-3">
           <thead>
             <tr>
               {headers.map((header, index) => (
@@ -147,8 +156,7 @@ function ResponseSummary(props) {
                     title={response.date.split(" ")[1]}
                   >
                     <td className="text-center">
-                      {response.date.split(" ")[0]}{" "}
-                      {response.date.split(" ")[1]}
+                      {response.date.split(" ")[0]}
                     </td>
                   </CustomOverlayTrigger>
                   <td className="text-center">

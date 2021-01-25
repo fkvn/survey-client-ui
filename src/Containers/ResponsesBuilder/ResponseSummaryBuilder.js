@@ -17,7 +17,7 @@ function ResponseSummaryBuilder(props) {
   const responses = useSelector((state) => state.surveyBuilder.responses);
 
   useEffect(() => {
-    if (survey.id && !responses) {
+    if (survey && survey.id && !responses) {
       setTimeout(() => dispatch(actionCreators.getResponses(survey.id)), 500);
     }
   });

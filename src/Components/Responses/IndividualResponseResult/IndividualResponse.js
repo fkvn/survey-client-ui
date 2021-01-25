@@ -28,7 +28,7 @@ function IndividualResponse(props) {
           <Card.Header
             as={Nav}
             variant="tabs"
-            className="m-0 p-0 border-bottom"
+            className="mx-3 mt-5 p-0 border-bottom"
           >
             {response.answerSections.map((_, index) => (
               <Nav.Item key={index}>
@@ -36,19 +36,15 @@ function IndividualResponse(props) {
               </Nav.Item>
             ))}
           </Card.Header>
-          <Card.Body as={Tab.Content} className="border border-top-0">
+          <Card.Body as={Tab.Content} className="">
             {response.answerSections.map((section, index) => (
-              <Tab.Pane
-                key={index}
-                eventKey={index}
-                className="m-2 d-none d-xl-block"
-              >
+              <div key={index}>
                 <DisplayDescription description={section.description} />
                 <InvQuestionDisplay
                   questions={survey.questionSections[index].questions}
                   answers={section.answers}
                 />
-              </Tab.Pane>
+              </div>
             ))}
           </Card.Body>
         </Card>
@@ -58,9 +54,12 @@ function IndividualResponse(props) {
 
   return (
     <>
-      {!funcs.isEmpty(survey) && !funcs.isEmpty(response) && (
+      {!funcs.isEmpty(survey) && !funcs.isEmpty(response) ? (
         <MainDisplay survey={survey} response={response} />
-      )}{" "}
+      ) : (
+        <> </>
+        // <ReactLoading type={"bars"} color={"black"} />
+      )}
     </>
   );
 }

@@ -28,6 +28,7 @@ import CreateSectionBuilder from "../../Containers/DashboardBuilder/UpdateSectio
 import IconButton from "../CustomButton/IconButton";
 import PublishSurveyBuilder from "../../Containers/DashboardBuilder/UpdateSurveyBuilders/PublishSurveyBuilder";
 import Sections from "../Sections/Sections";
+import CustomOverlayTrigger from "../CustomOverlayTrigger/CustomOverlayTrigger";
 
 function FullSurvey(props) {
   const { survey = {} } = props;
@@ -104,11 +105,13 @@ function FullSurvey(props) {
           op.type === "Publish" ? (
             <PublishSurveyBuilder key={i} survey={survey}>
               <Button variant="link" size="lg" className="px-1">
-                <FontAwesomeIcon
-                  icon={["fas", "cloud-upload-alt"]}
-                  size="sm"
-                  color="text-primary"
-                />
+                <CustomOverlayTrigger title={op.title}>
+                  <FontAwesomeIcon
+                    icon={["fas", "cloud-upload-alt"]}
+                    size="sm"
+                    color="text-primary"
+                  />
+                </CustomOverlayTrigger>
               </Button>
             </PublishSurveyBuilder>
           ) : (

@@ -7,7 +7,10 @@ import DashboardBuilder from "../DashboardBuilder/DashboardBuilder";
 import ViewSurveyBuilder from "./ViewSurveyBuilder";
 
 import NotFoundPage from "../../NotFoundPage";
-import ResponseControllerBuilder from "../ResponsesBuilder/ResponseControllerBuilder";
+// import ResponseControllerBuilder from "../ResponsesBuilder/ResponseControllerBuilder";
+
+import ResponseControllerBuilder from "../ResponseBuilder_v2/ResponseControllerBuilder";
+import QuestionSummaryBuilder from "../ResponseBuilder_v2/QuestionSummaryBuilder";
 
 function ControllerBuilder() {
   return (
@@ -19,16 +22,25 @@ function ControllerBuilder() {
         <Route path="/dashboard/mysurveys/survey" exact strict>
           <ViewSurveyBuilder />
         </Route>
+        {/* <Route
+          path={["/dashboard/mysurveys/survey/:sId/responses/questionSummary"]}
+          exact
+          strict
+        >
+          <QuestionSummaryBuilder />
+        </Route> */}
         <Route
           path={[
             "/dashboard/mysurveys/survey/:sId/responses",
             "/dashboard/mysurveys/survey/:sId/responses/:resId",
+            "/dashboard/mysurveys/survey/:sId/responses/questionSummary",
           ]}
           exact
           strict
         >
           <ResponseControllerBuilder />
         </Route>
+
         <Route path="/dashboard/mysurveys/editSurvey" exact strict>
           <EditSurveyBuilder />
         </Route>

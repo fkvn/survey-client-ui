@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Breadcrumb,
   Card,
@@ -27,7 +27,11 @@ function SurveyResponse(props) {
   let defaultSResponse = null;
   let defaultUpdatedRankingLists = null;
 
-  if (JSON.parse(localStorage.getItem(`survey:${survey.id}`))) {
+  if (
+    localStorage.getItem(`survey:${survey.id}`) &&
+    JSON.parse(localStorage.getItem(`survey:${survey.id}`))
+  ) {
+    console.log("here");
     const defaultSurveyResponse = JSON.parse(
       localStorage.getItem(`survey:${survey.id}`)
     );

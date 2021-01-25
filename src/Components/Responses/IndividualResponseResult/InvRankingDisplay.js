@@ -14,14 +14,6 @@ function InvRankingDisplay(props) {
     question.rankingChoices.length ===
       Object.keys(answer.selectionRanks).length;
 
-  // if (answer.id === 82) {
-  //   console.log(!funcs.isEmpty(question) && !funcs.isEmpty(answer));
-  //   console.log(
-  //     question.questionType === answer.answerType &&
-  //       answer.answerType === "RANKINg"
-  //   );
-  // }
-
   const MainDisplay = ({ _, answer = {} }) => {
     const selectionRanks = answer.selectionRanks;
     const ranks = Object.keys(selectionRanks);
@@ -38,7 +30,7 @@ function InvRankingDisplay(props) {
 
             <FormControl
               key={index}
-              defaultValue={selectionRanks[rank]}
+              defaultValue={question.rankingChoices[selectionRanks[rank]]}
               readOnly
             />
           </InputGroup>

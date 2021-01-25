@@ -4,6 +4,14 @@ import draftToHtml from "draftjs-to-html";
 export const STR_TYPE = "str";
 export const DATE_TYPE = "date";
 
+export const sortableObjectByValue = (obj = {}) => {
+  if (isEmpty(obj)) return [];
+
+  return Object.entries(obj)
+    .sort(([, a], [, b]) => b - a)
+    .reduce((r, [k, _], rank) => ({ ...r, [k]: rank + 1 }), {});
+};
+
 export const toSentenceCase = (inputStr = "") => {
   if (!inputStr) return "";
 

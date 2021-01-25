@@ -27,11 +27,12 @@ function RankingChoiceRes(props) {
       selectionRanks: !funcs.isEmpty(updatedRankingLists)
         ? updatedRankingLists
         : question.rankingChoices.reduce(
-            (newSelRanks, choice) => [
+            (newSelRanks, choice, index) => [
               ...newSelRanks,
               {
                 rank: "",
                 choice: choice,
+                choiceIndex: index,
               },
             ],
             []
@@ -59,7 +60,7 @@ function RankingChoiceRes(props) {
         ...answer,
         selectionRanks: request.answer.selectionRanks.reduce(
           (newSelRanks, selRank) => {
-            return { ...newSelRanks, [selRank.rank]: selRank.choice };
+            return { ...newSelRanks, [selRank.rank]: selRank.choiceIndex };
           },
           {}
         ),
@@ -88,6 +89,7 @@ function RankingChoiceRes(props) {
           ? {
               rank: newRank,
               choice: rankingChoice.choice,
+              choiceIndex: rankingChoice.choiceIndex,
             }
           : {
               ...selRank,
