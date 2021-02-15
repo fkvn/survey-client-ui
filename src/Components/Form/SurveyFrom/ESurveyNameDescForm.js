@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Modal, Form, Row, Col } from "react-bootstrap";
 
+import * as exprInit from "../../../export/exportInit";
+
 function ESurveyNameDescModal(props) {
   const {
     show = "false",
@@ -69,8 +71,8 @@ function ESurveyNameDescModal(props) {
       event.preventDefault();
 
       const updatedSurvey = {
-        name: sNameRef.current.value,
-        description: sDescRef.current.value,
+        [`${exprInit.serVarInit.SURVEY_NAME}`]: sNameRef.current.value,
+        [`${exprInit.serVarInit.SURVEY_DESCRIPTION}`]: sDescRef.current.value,
       };
 
       onSubmitHanlder(updatedSurvey);

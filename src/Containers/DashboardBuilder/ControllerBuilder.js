@@ -10,18 +10,12 @@ import NotFoundPage from "../../NotFoundPage";
 // import ResponseControllerBuilder from "../ResponsesBuilder/ResponseControllerBuilder";
 
 import ResponseControllerBuilder from "../ResponseBuilder_v2/ResponseControllerBuilder";
-import QuestionSummaryBuilder from "../ResponseBuilder_v2/QuestionSummaryBuilder";
+// import QuestionSummaryBuilder from "../ResponseBuilder_v2/QuestionSummaryBuilder";
 
 function ControllerBuilder() {
   return (
     <>
       <Switch>
-        <Route path="/dashboard/mysurveys" exact strict>
-          <MySurveysBuilder />
-        </Route>
-        <Route path="/dashboard/mysurveys/survey" exact strict>
-          <ViewSurveyBuilder />
-        </Route>
         {/* <Route
           path={["/dashboard/mysurveys/survey/:sId/responses/questionSummary"]}
           exact
@@ -40,9 +34,15 @@ function ControllerBuilder() {
         >
           <ResponseControllerBuilder />
         </Route>
-
+        <Route path="/dashboard/mysurveys/survey" exact strict>
+          <ViewSurveyBuilder />
+        </Route>
         <Route path="/dashboard/mysurveys/editSurvey" exact strict>
           <EditSurveyBuilder />
+        </Route>
+
+        <Route path="/dashboard/mysurveys" exact strict>
+          <MySurveysBuilder />
         </Route>
         <Route exact strict path="/dashboard">
           <DashboardBuilder />

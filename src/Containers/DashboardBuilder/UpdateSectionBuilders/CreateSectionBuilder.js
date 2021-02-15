@@ -1,34 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import * as actionCreators from "../../../store/actionCreators/Surveys/index";
 import AddSectionForm from "../../../Components/Form/SectionForm/AddSectionForm";
-import AlertDismissible from "../../../Components/Alert/AlertDismissible";
+
+import * as exprInit from "../../../export/exportInit";
 
 function CreateSectionBuilder(props) {
-  const { surveyId, show, onHide, updateSection } = props;
+  const {
+    survey = exprInit.dataInitialize.SURVEY_INIT,
+    handleValidationError = () => {},
+    show,
+    onHide,
+    updateSection,
+  } = props;
 
   const dispatch = useDispatch();
 
-  const [request, setRequest] = useState({
-    showSiteMsg: true,
-  });
-
   const handlerAddSectionSubmit = (newSection) => {
-    dispatch(actionCreators.addSection(surveyId, newSection)).then((newSec) => {
+    dispatch(
+      actionCreators.addSection(
+        survey[`${exprInit.abbrInit.SURVEY_ID}`],
+        newSection
+      )
+    ).then((newSec) => {
       updateSection && updateSection(newSec);
     });
   };
 
-  const alert = !surveyId && request.showSiteMsg && (
-    <AlertDismissible
-      // component will be re-render cuz state is upddated when user click close
-      onClose={() => setRequest({ ...request, showSiteMsg: false })}
-      type="danger"
-      msg={"Couldn't find survey information!!!"}
-    ></AlertDismissible>
-  );
+  let survFetchDate = null;
+  try {
+    survFetchDate = exprInit.funcs.dateFormat(
+      survey[`${exprInit.abbrInit.FETCHING_DATE}`]
+    );
+  } catch (error) {}
 
+  useEffect(() => {
+    if (!survFetchDate) {
+      handleValidationError({
+        [`${exprInit.abbrInit.MESSAGE}`]: "Please reload or contact administrations!",
+      });
+    }
+  }, [survFetchDate, handleValidationError]);
+
+  console.log(survey);
   const addSectionModal = (
     <AddSectionForm
       show={show}
@@ -37,10 +52,13 @@ function CreateSectionBuilder(props) {
       heading="Add Section"
     ></AddSectionForm>
   );
+
   return (
     <>
-      {alert}
-      {surveyId && addSectionModal}{" "}
+      {show &&
+        survFetchDate &&
+        survey[`${exprInit.abbrInit.IS_FETCHED}`] &&
+        addSectionModal}{" "}
     </>
   );
 }

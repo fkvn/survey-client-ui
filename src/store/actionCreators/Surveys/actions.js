@@ -1,5 +1,5 @@
 import * as actionTypes from "./actionTypes";
-
+import * as exprInit from "../../../export/exportInit";
 /* Description 
 
   This file implements all actions dispatched by Redux action creators.
@@ -71,38 +71,45 @@ import * as actionTypes from "./actionTypes";
       value: openedSurveys param
   } -> same variable name, but one is from action called, one is to send to redux reducer
 */
-export const getOpenedSurvyes = (openedSurveys) => {
+export const getOpenSurveyList = (openSurvList = []) => {
   return {
-    type: actionTypes.GET_OPENED_SURVEYS,
-    openedSurveys: openedSurveys,
+    type: actionTypes.GET_OPEN_SURVEY_LIST,
+
+    [`${exprInit.abbrInit.SURVEY_LIST}`]: openSurvList,
   };
 };
 
-export const getSurveys = (surveys) => {
+export const getUserSurveyList = (userSurvList = []) => {
   return {
-    type: actionTypes.GET_SURVEYS,
-    surveys: surveys,
+    type: actionTypes.GET_USER_SURVEY_LIST,
+    [`${exprInit.abbrInit.SURVEY_LIST}`]: userSurvList,
   };
 };
 
 export const getFullSurvey = (survey) => {
   return {
     type: actionTypes.GET_FULL_SURVEY,
-    fullSurvey: survey,
+    [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: survey,
   };
 };
 
-export const addSurvey = () => {
+export const addSurvey = (newSurvID) => {
   return {
     type: actionTypes.ADD_SURVEY,
+    [`${exprInit.abbrInit.SURVEY_ID}`]: newSurvID,
   };
 };
 
 export const updateSurvey = (surveyId, fields) => {
+  const updatedSurv = {
+    [`${exprInit.serVarInit.SURVEY_ID}`]: surveyId,
+    ...fields,
+  };
+
   return {
     type: actionTypes.UPDATE_SURVEY,
-    surveyId: surveyId,
-    updatedFields: { ...fields },
+    [`${exprInit.abbrInit.SURVEY_ID}`]: surveyId,
+    [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: updatedSurv,
   };
 };
 
@@ -114,10 +121,11 @@ export const deleteSurvey = () => {
 
 // =============== survey > section ===============
 
-export const addSection = (section) => {
+export const addSection = (surveyId, section) => {
   return {
     type: actionTypes.ADD_SECTION,
-    newSection: section,
+    [`${exprInit.abbrInit.SURVEY_ID}`]: surveyId,
+    [`${exprInit.abbrInit.ACTIVE_SECTION}`]: section,
   };
 };
 
@@ -216,10 +224,21 @@ export const removeResponse = (surveyId, responseId) => {
 
 // =============== errors ===============
 
-export const fetchSurveysFailed = (error) => {
+export const fetchingError = (error, type) => {
+  // console.log(error);
+  const errorUpdated = {
+    [`${exprInit.abbrInit.IS_ERROR}`]: true,
+    [`${exprInit.abbrInit.ERROR_TYPE}`]: type
+      ? type
+      : exprInit.abbrInit.FETCHING_ERROR,
+    [`${exprInit.abbrInit.ERROR_MESSAGE}`]: error.message,
+  };
+  // console.log(errorUpdated);
+
   return {
     type: actionTypes.FETCH_SURVEYS_FAILED,
-    errMsg: error.message,
+
+    [`${exprInit.abbrInit.ERROR}`]: errorUpdated,
   };
 };
 

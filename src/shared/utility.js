@@ -1,9 +1,87 @@
 import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
+import * as exprInit from "../export/exportInit";
 
 export const STR_TYPE = "str";
 export const DATE_TYPE = "date";
 
+export const updateSurvey = (activeSurv, serSurv) => {
+  const surv = { ...activeSurv };
+
+  const updatedFields = Object.keys(serSurv);
+
+  for (const field of updatedFields) {
+    switch (field) {
+      case exprInit.serVarInit.SURVEY_ID:
+        surv[`${exprInit.abbrInit.SURVEY_ID}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_AUTHOR:
+        surv[`${exprInit.abbrInit.SURVEY_AUTHOR}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_NAME:
+        surv[`${exprInit.abbrInit.SURVEY_NAME}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_TYPE:
+        surv[`${exprInit.abbrInit.SURVEY_TYPE}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_DESCRIPTION:
+        surv[`${exprInit.abbrInit.SURVEY_DESCRIPTION}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_DATE_CREATED:
+        surv[`${exprInit.abbrInit.SURVEY_DATE_CREATED}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_DATE_PUBLISHED:
+        surv[`${exprInit.abbrInit.SURVEY_DATE_PUBLISHED}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_IS_ARCHIVED:
+        surv[`${exprInit.abbrInit.SURVEY_IS_ARCHIVED}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_SECTION_COUNT:
+        surv[`${exprInit.abbrInit.SURVEY_SECTION_COUNT}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_SECTION_LIST:
+        surv[`${exprInit.abbrInit.SURVEY_SECTION_LIST}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_RESPONSE_COUNT:
+        surv[`${exprInit.abbrInit.SURVEY_RESPONSE_COUNT}`] = serSurv[field];
+        break;
+      case exprInit.serVarInit.SURVEY_RESPONSE_LIST:
+        surv[`${exprInit.abbrInit.SURVEY_RESPONSE_LIST}`] = serSurv[field];
+        break;
+      default:
+        break;
+    }
+  }
+
+  return surv;
+};
+
+export const updateSection = (activeSec, serSec) => {
+  const sec = { ...activeSec };
+
+  const updatedFields = Object.keys(serSec);
+
+  for (const field of updatedFields) {
+    switch (field) {
+      case exprInit.serVarInit.SECTION_ID:
+        sec[`${exprInit.abbrInit.SECTION_ID}`] = serSec[field];
+        break;
+      case exprInit.serVarInit.SECTION_INDEX:
+        sec[`${exprInit.abbrInit.SECTION_INDEX}`] = serSec[field];
+        break;
+      case exprInit.serVarInit.SECTION_DESCRIPTION:
+        sec[`${exprInit.abbrInit.SECTION_DESCRIPTION}`] = serSec[field];
+        break;
+      case exprInit.serVarInit.SECTION_QUESTION_LIST:
+        sec[`${exprInit.abbrInit.SECTION_QUESTION_LIST}`] = serSec[field];
+        break;
+      default:
+        break;
+    }
+  }
+
+  return sec;
+};
 export const sortableObjectByValue = (obj = {}) => {
   if (isEmpty(obj)) return [];
 

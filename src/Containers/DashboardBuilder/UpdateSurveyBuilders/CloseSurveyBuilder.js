@@ -4,9 +4,11 @@ import { Popover, Button, OverlayTrigger } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useHistory } from "react-router-dom";
 
-import * as funcs from "../../../shared/utility";
-import * as actionCreators from "../../../store/actionCreators/Surveys/index";
+// import * as funcs from "../../../shared/utility";
+// import * as actionCreators from "../../../store/actionCreators/Surveys/index";
 import "../../../shared/fontawesome";
+
+import * as exprInit from "../../../export/exportInit";
 
 function CloseSurveyBuilder(props) {
   const { survey } = props;
@@ -15,11 +17,15 @@ function CloseSurveyBuilder(props) {
 
   const handlerOnPublishSurvey = () => {
     const updatedSurvey = {
-      closeDate: funcs.dateFormat(new Date()),
-      closed: true,
+      [`${exprInit.serVarInit.SURVEY_DATE_CLOSED}`]: exprInit.funcs.dateFormat(
+        new Date()
+      ),
+      [`${exprInit.serVarInit.SURVEY_IS_ARCHIVED}`]: true,
     };
 
-    dispatch(actionCreators.updateSurvey(survey.id, updatedSurvey)).then(() => {
+    dispatch(
+      exprInit.actionCreators.updateSurvey(survey.id, updatedSurvey)
+    ).then(() => {
       if (
         history.location.pathname !== "/dashboard/mysurveys" &&
         history.location.pathname !== "/dashboard"

@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import FormModal from "../../Modal/FormModal";
 import { Form } from "react-bootstrap";
 
+import * as exprInit from "../../../export/exportInit";
+
 function AddSectionForm(props) {
   const {
     show,
@@ -21,7 +23,7 @@ function AddSectionForm(props) {
 
   const handlerOnSubmit = () => {
     const newSection = {
-      description: descRef.current.value,
+      [`${exprInit.serVarInit.SECTION_DESCRIPTION}`]: descRef.current.value,
     };
 
     onAddSectionSubmit(newSection);

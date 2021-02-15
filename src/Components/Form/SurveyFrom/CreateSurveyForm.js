@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import FormModal from "../../Modal/FormModal";
 import { Form } from "react-bootstrap";
 
+import * as exprInit from "../../../export/exportInit";
+
 function CreateSurveyForm(props) {
   const {
     show,
@@ -85,10 +87,12 @@ function CreateSurveyForm(props) {
 
   const handlerOnSubmit = () => {
     const newSurvey = {
-      name: sName.current.value,
-      type: sType.current.value.toUpperCase(),
-      description: sDescription.current.value,
-      numberOfSections: Number(sSection.current.value),
+      [`${exprInit.serVarInit.SURVEY_NAME}`]: sName.current.value,
+      [`${exprInit.serVarInit.SURVEY_TYPE}`]: sType.current.value.toUpperCase(),
+      [`${exprInit.serVarInit.SURVEY_DESCRIPTION}`]: sDescription.current.value,
+      [`${exprInit.serVarInit.SURVEY_SECTION_COUNT}`]: Number(
+        sSection.current.value
+      ),
     };
     onCreateSurveySubmit(newSurvey);
   };

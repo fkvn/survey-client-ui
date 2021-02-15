@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Card,
@@ -14,7 +14,8 @@ import ReactLoading from "react-loading";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../../shared/fontawesome";
-import * as funcs from "../../shared/utility";
+import * as exprInit from "../../export/exportInit";
+// import * as funcs from "../../shared/utility";
 
 // // survey
 import UpdateSurveyBuilder from "../../Containers/DashboardBuilder/UpdateSurveyBuilders/UpdateSurveyBuilder";
@@ -31,31 +32,65 @@ import Sections from "../Sections/Sections";
 import CustomOverlayTrigger from "../CustomOverlayTrigger/CustomOverlayTrigger";
 
 function FullSurvey(props) {
-  const { survey = {} } = props;
+  const {
+    survey = exprInit.dataInitialize.OPEN_SURVEY_LIST_INIT,
+    handleValidationError = () => {},
+  } = props;
   const history = useHistory();
 
   const [request, setRequest] = useState({
-    showESurNameDescModal: false,
-    showDeleteSurveyModal: false,
+    [`${exprInit.abbrInit.SHOW_UPDATE_SURVEY_MODAL}`]: false,
+    [`${exprInit.abbrInit.SHOW_DELETE_SURVEY_MODAL}`]: false,
 
-    showAddSectionModal: false,
+    [`${exprInit.abbrInit.SHOW_ADD_SECTION_MODAL}`]: false,
     activeSection: 0,
   });
 
+  // retrieve fetch date
+  let survFetchDate = null;
+  try {
+    survFetchDate = exprInit.funcs.dateFormat(
+      survey[`${exprInit.abbrInit.FETCHING_DATE}`]
+    );
+  } catch (error) {}
+
+  useEffect(() => {
+    if (!survFetchDate) {
+      handleValidationError({
+        [`${exprInit.abbrInit.MESSAGE}`]: "The survey is not load probably. Please reload or contact administrations!",
+      });
+    }
+  }, [survFetchDate, handleValidationError]);
+
   // ============================ Survey Modals ==============================
 
-  const updateSurveyModal = request.showESurNameDescModal && (
+  const updateSurveyModal = request[
+    `${exprInit.abbrInit.SHOW_UPDATE_SURVEY_MODAL}`
+  ] && (
     <UpdateSurveyBuilder
       show={true}
-      onHide={() => setRequest({ ...request, showESurNameDescModal: false })}
+      onHide={() =>
+        setRequest({
+          ...request,
+          [`${exprInit.abbrInit.SHOW_UPDATE_SURVEY_MODAL}`]: false,
+        })
+      }
       survey={survey}
+      handleValidationError={handleValidationError}
     ></UpdateSurveyBuilder>
   );
 
-  const deleteSurveyModal = request.showDeleteSurveyModal && (
+  const deleteSurveyModal = request[
+    `${exprInit.abbrInit.SHOW_DELETE_SURVEY_MODAL}`
+  ] && (
     <DeleteSurveyBuilder
       show={true}
-      onHide={() => setRequest({ ...request, showDeleteSurveyModal: false })}
+      onHide={() =>
+        setRequest({
+          ...request,
+          [`${exprInit.abbrInit.SHOW_DELETE_SURVEY_MODAL}`]: false,
+        })
+      }
       survey={survey}
     ></DeleteSurveyBuilder>
   );
@@ -66,12 +101,20 @@ function FullSurvey(props) {
     const editSurveyOption = {
       type: "Edit",
       title: "Edit name and description",
-      onClick: () => setRequest({ ...request, showESurNameDescModal: true }),
+      onClick: () =>
+        setRequest({
+          ...request,
+          [`${exprInit.abbrInit.SHOW_UPDATE_SURVEY_MODAL}`]: true,
+        }),
     };
     const addSectionOption = {
       type: "Add",
       title: "Add section",
-      onClick: () => setRequest({ ...request, showAddSectionModal: true }),
+      onClick: () =>
+        setRequest({
+          ...request,
+          [`${exprInit.abbrInit.SHOW_ADD_SECTION_MODAL}`]: true,
+        }),
     };
     const publishOptions = {
       type: "Publish",
@@ -86,7 +129,11 @@ function FullSurvey(props) {
     const deleteSurveyOption = {
       type: "Delete",
       title: "Delete survey",
-      onClick: () => setRequest({ ...request, showDeleteSurveyModal: true }),
+      onClick: () =>
+        setRequest({
+          ...request,
+          [`${exprInit.abbrInit.SHOW_DELETE_SURVEY_MODAL}`]: true,
+        }),
     };
 
     let allowedOptions = [];
@@ -115,7 +162,7 @@ function FullSurvey(props) {
               </Button>
             </PublishSurveyBuilder>
           ) : (
-            !funcs.isEmpty(op) && (
+            !exprInit.funcs.isEmpty(op) && (
               <IconButton
                 type={op.type}
                 title={op.title}
@@ -154,10 +201,14 @@ function FullSurvey(props) {
                 variant="link"
                 className="text-info px-0 text-decoration-none"
                 onClick={() =>
-                  history.push(`/dashboard/mysurveys/survey?sId=${survey.id}`)
+                  history.push(
+                    `/dashboard/mysurveys/survey?sId=${
+                      survey[`${exprInit.abbrInit.SURVEY_ID}`]
+                    }`
+                  )
                 }
               >
-                <strong>{survey.name}</strong>
+                <strong>{survey[`${exprInit.abbrInit.SURVEY_NAME}`]}</strong>
               </Button>
             </Col>
             <Col xs={4} lg={8}>
@@ -182,16 +233,23 @@ function FullSurvey(props) {
 
   // ============================ Sections ===========================
 
-  const addSectionModal = request.showAddSectionModal && (
+  const addSectionModal = request[
+    `${exprInit.abbrInit.SHOW_ADD_SECTION_MODAL}`
+  ] && (
     <CreateSectionBuilder
       show={true}
-      onHide={() => setRequest({ ...request, showAddSectionModal: false })}
-      surveyId={survey.id}
+      onHide={() =>
+        setRequest({
+          ...request,
+          [`${exprInit.abbrInit.SHOW_ADD_SECTION_MODAL}`]: false,
+        })
+      }
+      survey={survey}
       updateSection={(newSec) => {
         setRequest({
           ...request,
           activeSection: newSec.sectionIndex,
-          showAddSectionModal: false,
+          [`${exprInit.abbrInit.SHOW_ADD_SECTION_MODAL}`]: false,
         });
       }}
     ></CreateSectionBuilder>
@@ -216,20 +274,21 @@ function FullSurvey(props) {
     );
   };
 
+  console.log("herer");
+
   const fullSurveyDisplay = (
     <>
       <Card className="bg-white border border-info">
         {surveyTitleNavBar}
         <Card.Body className="p-0">
           <DisplayDescription
-            description={survey.description}
+            description={survey[`${exprInit.abbrInit.SURVEY_DESCRIPTION}`]}
             mutedOption={true}
           ></DisplayDescription>
-
-          {survey.questionSections && survey.questionSections.length > 0 && (
+          {survey[`${exprInit.abbrInit.SURVEY_SECTION_COUNT}`] > 0 && (
             <Sections
-              surveyId={survey.id}
-              sections={survey.questionSections}
+              surveyId={survey[`${exprInit.abbrInit.SURVEY_ID}`]}
+              sections={survey[`${exprInit.abbrInit.SURVEY_SECTION_LIST}`]}
               defaulActiveSection={request.activeSection}
               updateActiveSectionAfterUpdated={(updatedSectionIndex) => {
                 setRequest({ ...request, activeSection: updatedSectionIndex });
@@ -243,7 +302,10 @@ function FullSurvey(props) {
 
   return (
     <>
-      {!funcs.isEmpty(survey) && survey.closed && !survey.publishDate ? (
+      {survFetchDate &&
+      survey[`${exprInit.abbrInit.IS_FETCHED}`] &&
+      survey[`${exprInit.abbrInit.SURVEY_IS_ARCHIVED}`] &&
+      !survey[`${exprInit.abbrInit.SURVEY_DATE_PUBLISHED}`] ? (
         <>
           {/* survey option modals */}
           {updateSurveyModal}

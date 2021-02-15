@@ -17,7 +17,6 @@ function App() {
       <>
         <Layout>
           <Switch>
-            <Route path="/" exact component={SurveyBuilder}></Route>
             <Route path="/dashboard" component={ControllerBuilder}></Route>
             <Route path="/surveys/response/submit" exact>
               <SubmitSurveyBuilder />
@@ -65,7 +64,7 @@ function App() {
                 </div>
               </Jumbotron>
             </Route>
-
+            <Route path="/" exact component={SurveyBuilder}></Route>
             <Route path="*" component={NotFoundPage} />
           </Switch>
         </Layout>

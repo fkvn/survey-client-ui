@@ -5,6 +5,8 @@
 import axios from "../../../axios-surveyservice";
 import * as actions from "./actions";
 
+import * as exprInit from "../../../export/exportInit";
+
 /* Description
    
   This file implements asynchronous action creators with Redux Thunk
@@ -30,29 +32,31 @@ import * as actions from "./actions";
 
 // =============== survey redux action creators ===============
 
-export const initPublishedSurveys = () => {
+export const initOpenSurveyList = () => {
   return (dispatch) => {
-    axios
-      .get("/surveys/opened")
+    return axios
+      .get("/surveys/open")
       .then((response) => {
-        dispatch(actions.getOpenedSurvyes(response.data ? response.data : []));
+        return dispatch(
+          actions.getOpenSurveyList(response.data ? response.data : [])
+        );
       })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(actions.fetchingError(error));
       });
   };
 };
 
 // need authorization
-export const initSurveys = () => {
+export const initUserSurveyList = () => {
   return (dispatch) => {
     axios
       .get("/surveys")
       .then((response) => {
-        dispatch(actions.getSurveys(response.data));
+        dispatch(actions.getUserSurveyList(response.data ? response.data : []));
       })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(actions.fetchingError(error));
       });
   };
 };
@@ -62,7 +66,7 @@ export const initFullSurvey = (surveyId) => {
     const fullSurvey = await axios
       .get("/surveys/" + surveyId)
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(actions.fetchingError(error));
       });
 
     if (fullSurvey) {
@@ -76,7 +80,7 @@ export const addSurvey = (newSurvey) => {
     let newSurveyID = await axios
       .post(`/surveys`, { ...newSurvey })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(actions.fetchingError(error));
       });
 
     if (newSurveyID) {
@@ -99,7 +103,7 @@ export const addSurvey = (newSurvey) => {
         addSectionSucess = false;
         axios.delete(`/surveys/${newSurveyID}`).then(() =>
           dispatch(
-            actions.fetchSurveysFailed({
+            actions.fetchingError({
               message: "Uncessfully created survey.",
             })
           )
@@ -107,7 +111,7 @@ export const addSurvey = (newSurvey) => {
       });
 
       if (addSectionSucess) {
-        dispatch(actions.addSurvey());
+        dispatch(actions.addSurvey(newSurveyID));
         return newSurveyID;
       }
     }
@@ -123,7 +127,7 @@ export const updateSurvey = (surveyId, fields) => {
         return id.data;
       })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(actions.fetchingError(error));
       });
   };
 };
@@ -135,7 +139,7 @@ export const deleteSurvey = (surveyId) => {
       .then(() => {
         dispatch(actions.deleteSurvey());
       })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -149,12 +153,12 @@ export const addSection = (surveyId, newSection) => {
         return axios
           .get(`/surveys/${surveyId}/sections/${id.data}`)
           .then(async (section) => {
-            dispatch(actions.addSection(section.data));
+            dispatch(actions.addSection(surveyId, section.data));
             return section.data;
           })
-          .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+          .catch((error) => dispatch(actions.fetchingError(error)));
       })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -163,7 +167,7 @@ export const updateSection = (surveyId, sectionId, fields) => {
     return axios
       .patch(`/surveys/${surveyId}/sections/${sectionId}`, { ...fields })
       .then(() => dispatch(actions.updateSection(sectionId, fields)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -176,7 +180,7 @@ export const updateSectionIndex = (surveyId, sectionId, oldIndex, newIndex) => {
       .then(() =>
         dispatch(actions.updateSectionIndex(surveyId, oldIndex, newIndex))
       )
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -185,7 +189,7 @@ export const deleteSection = (surveyId, sectionId) => {
     return axios
       .delete(`/surveys/${surveyId}/sections/${sectionId}`)
       .then(() => dispatch(actions.deleteSection(sectionId)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -208,7 +212,7 @@ export const addQuestion = (surveyId, sectionId, newQuestion, files) => {
         "Content-Type": "multipart/form-data;",
       },
     }).catch((error) => {
-      dispatch(actions.fetchSurveysFailed(error));
+      dispatch(actions.fetchingError(error));
     });
 
     if (newQuestionId) {
@@ -221,7 +225,7 @@ export const addQuestion = (surveyId, sectionId, newQuestion, files) => {
           dispatch(actions.addQuestion(surveyId, sectionId, newQuestion.data));
           return newQuestion.data;
         })
-        .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+        .catch((error) => dispatch(actions.fetchingError(error)));
     }
   };
 };
@@ -259,9 +263,9 @@ export const updateQuestion = (
 
             return updatedQuestion.data;
           })
-          .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+          .catch((error) => dispatch(actions.fetchingError(error)));
       })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -281,7 +285,7 @@ export const updateQuestionIndex = (
       .then(() =>
         dispatch(actions.updateQuestionIndex(sectionId, oldIndex, newIndex))
       )
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -292,7 +296,7 @@ export const deleteQuestion = (surveyId, sectionId, questionId) => {
         `/surveys/${surveyId}/sections/${sectionId}/questions/${questionId}`
       )
       .then(() => dispatch(actions.deleteQuestion(sectionId, questionId)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -303,7 +307,7 @@ export const getResponses = (surveyId) => {
     axios
       .get(`surveys/${surveyId}/responses`)
       .then((responses) => dispatch(actions.getResponses(responses.data)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -315,7 +319,7 @@ export const getResponse = (surveyId, responseId) => {
         dispatch(actions.getResponse(response.data));
         return response.data;
       })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -323,7 +327,7 @@ export const addResponse = (surveyId, response) => {
   return async (dispatch) => {
     const newResponse = await axios
       .post(`surveys/${surveyId}/responses`, { ...response })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
 
     if (newResponse) {
       dispatch(actions.addResponse(surveyId));
@@ -338,7 +342,7 @@ export const removeResponse = (surveyId, responseId) => {
     return axios
       .delete(`surveys/${surveyId}/responses/${responseId}`)
       .then(() => dispatch(actions.removeResponse(surveyId, responseId)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.fetchingError(error)));
   };
 };
 
@@ -346,5 +350,11 @@ export const removeResponse = (surveyId, responseId) => {
 export const updateAttachmentObjects = (imgObject) => {
   return (dispatch) => {
     dispatch(actions.updateAttachmentObjects(imgObject));
+  };
+};
+
+export const handleValidationError = (error) => {
+  return (dispatch) => {
+    dispatch(actions.fetchingError(error, exprInit.abbrInit.VALIDATION_ERROR));
   };
 };

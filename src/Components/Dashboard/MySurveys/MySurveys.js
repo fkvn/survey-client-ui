@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 import {
   Table,
@@ -8,7 +8,9 @@ import {
   Button,
   Pagination,
   Badge,
+  Form,
 } from "react-bootstrap";
+import ReactLoading from "react-loading";
 
 // Update survey builders
 import CreateSurveyBuilder from "../../../Containers/DashboardBuilder/UpdateSurveyBuilders/CreateSurveyBuilder";
@@ -18,6 +20,8 @@ import CloseSurveyBuilder from "../../../Containers/DashboardBuilder/UpdateSurve
 
 //
 import * as funcs from "../../../shared/utility";
+import * as exprInit from "../../../export/exportInit";
+
 import SearchForm from "../../SearchForm/SearchForm";
 import CustomOverlayTrigger from "../../CustomOverlayTrigger/CustomOverlayTrigger";
 import WebLinkSurvey from "../../WebLink/WebLinkSurvey";
@@ -26,7 +30,27 @@ import IconButton from "../../CustomButton/IconButton";
 function MySurveys(props) {
   const history = useHistory();
 
-  const { surveys = [] } = props;
+  const {
+    userSurvList = exprInit.dataInitialize.USER_SURVEY_LIST_INIT,
+    handleValidationError = () => {},
+    // charts = [],
+  } = props;
+
+  // retrieve fetch date
+  let userSurvFetchDate = null;
+  try {
+    userSurvFetchDate = exprInit.funcs.dateFormat(
+      userSurvList[`${exprInit.abbrInit.FETCHING_DATE}`]
+    );
+  } catch (error) {}
+
+  useEffect(() => {
+    if (!userSurvFetchDate) {
+      handleValidationError({
+        [`${exprInit.abbrInit.MESSAGE}`]: "The survey list is not load probably. Please reload or contact administrations!",
+      });
+    }
+  }, [userSurvFetchDate, handleValidationError]);
 
   const [request, setRequest] = useState({
     sortedBy: "",
@@ -62,10 +86,10 @@ function MySurveys(props) {
 
   let items = [];
 
-  if (surveys) {
+  if (userSurvList[`${exprInit.abbrInit.SURVEY_COUNT}`] > 0) {
     items = [
       ...items,
-      ...surveys.map(
+      ...userSurvList[`${exprInit.abbrInit.SURVEY_LIST}`].map(
         (s) =>
           (s = {
             ...s,
@@ -364,8 +388,15 @@ function MySurveys(props) {
           survey={request.updatingSurvey}
         />
       )}
-      {navBar}
-      {list}
+      {userSurvFetchDate ? (
+        <>
+          {navBar}
+          <Form.Text muted>Last Updated: {userSurvFetchDate}</Form.Text>
+          {list}
+        </>
+      ) : (
+        <ReactLoading type={"bars"} color={"black"} />
+      )}
     </>
   );
 }

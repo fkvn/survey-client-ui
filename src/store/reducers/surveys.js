@@ -2,6 +2,8 @@ import * as actionTypes from "../actionCreators/Surveys/actionTypes";
 import { updateObject } from "../../shared/utility";
 import * as funcs from "../../shared/utility";
 
+import * as exprInit from "../../export/exportInit";
+
 /* Description 
 
   This file defines initial state shape and reducer to produce new state.
@@ -25,15 +27,27 @@ import * as funcs from "../../shared/utility";
 */
 
 const initialState = {
-  openedSurveys: null,
-  surveys: null,
-  fullSurvey: null,
-  responses: null,
-  response: null,
-  questionResultSummaries: null,
-  attachmentObjects: {},
-  err: false,
-  errMsg: "",
+  [`${exprInit.abbrInit.OPEN_SURVEY_LIST}`]: exprInit.dataInitialize
+    .OPEN_SURVEY_LIST_INIT,
+
+  [`${exprInit.abbrInit.USER_SURVEY_LIST}`]: exprInit.dataInitialize
+    .USER_SURVEY_LIST_INIT,
+
+  [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: exprInit.dataInitialize.SURVEY_INIT,
+
+  [`${exprInit.abbrInit.ACTIVE_SECTION}`]: exprInit.dataInitialize.SECTION_INIT,
+
+  [`${exprInit.abbrInit.ERROR}`]: exprInit.dataInitialize.ERROR_INIT,
+
+  // openedSurveys: null,
+  // surveys: null,
+  // fullSurvey: null,
+  // responses: null,
+  // response: null,
+  // questionResultSummaries: null,
+  // attachmentObjects: {},
+  // err: false,
+  // errMsg: "",
 };
 
 // ================== survey reducer helping functions =========================
@@ -42,22 +56,39 @@ const initialState = {
   @Usage: called by redux reducer to update state from action payload
   @Param: state, action
 */
-const getOpenedSurveys = (_, action) => {
-  // return funcs.updateObject(state, {
-  //   openedSurveys: action.openedSurveys,
-  // });
+const getOpenSurvList = (state, action) => {
+  const openSurvListInit = {
+    ...state[`${exprInit.abbrInit.OPEN_SURVEY_LIST}`],
+  };
+
+  const openSurvList = action[`${exprInit.abbrInit.SURVEY_LIST}`];
+
+  openSurvListInit[`${exprInit.abbrInit.FETCHING_DATE}`] = new Date();
+  openSurvListInit[`${exprInit.abbrInit.IS_FETCHED}`] = true;
+  openSurvListInit[`${exprInit.abbrInit.SURVEY_COUNT}`] = openSurvList.length;
+  openSurvListInit[`${exprInit.abbrInit.SURVEY_LIST}`] = openSurvList;
 
   return {
-    openedSurveys: action.openedSurveys,
+    ...state,
+    [`${exprInit.abbrInit.OPEN_SURVEY_LIST}`]: openSurvListInit,
   };
 };
 
-const getSurveys = (_, action) => {
-  // return funcs.updateObject(state, {
-  //   surveys: action.surveys,
-  // });
+const getUserSurveyList = (state, action) => {
+  const userSurvListInit = {
+    ...state[`${exprInit.abbrInit.USER_SURVEY_LIST}`],
+  };
+
+  const userSurvList = action[`${exprInit.abbrInit.SURVEY_LIST}`];
+
+  userSurvListInit[`${exprInit.abbrInit.FETCHING_DATE}`] = new Date();
+  userSurvListInit[`${exprInit.abbrInit.IS_FETCHED}`] = true;
+  userSurvListInit[`${exprInit.abbrInit.SURVEY_COUNT}`] = userSurvList.length;
+  userSurvListInit[`${exprInit.abbrInit.SURVEY_LIST}`] = userSurvList;
+
   return {
-    surveys: action.surveys,
+    ...state,
+    [`${exprInit.abbrInit.USER_SURVEY_LIST}`]: userSurvListInit,
   };
 };
 
@@ -70,60 +101,85 @@ const getSurveys = (_, action) => {
 // };
 
 const getFullSurvey = (state, action) => {
-  // return updateObject(state, {
-  //   fullSurvey: action.fullSurvey,
-  //   error: false,
-  //   errorMessage: "",
-  // });
+  const activeSurv = exprInit.funcs.updateSurvey(
+    state[`${exprInit.abbrInit.ACTIVE_SURVEY}`],
+    action[`${exprInit.abbrInit.ACTIVE_SURVEY}`]
+  );
+
+  activeSurv[`${exprInit.abbrInit.FETCHING_DATE}`] = new Date();
+  activeSurv[`${exprInit.abbrInit.IS_FETCHED}`] = true;
+
   return {
-    fullSurvey: action.fullSurvey,
+    ...state,
+    [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: activeSurv,
   };
 };
 
-const addSurvey = (_, __) => {
-  return {};
+const addSurvey = (state, action) => {
+  const newSurv = {
+    ...state[`${exprInit.abbrInit.ACTIVE_SURVEY}`],
+  };
+
+  newSurv[`${exprInit.abbrInit.SURVEY_ID}`] =
+    action[`${exprInit.abbrInit.SURVEY_ID}`];
+
+  return {
+    ...state,
+    [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: newSurv,
+  };
 };
 
 const updateSurvey = (state, action) => {
-  // return updateObject(state, {
-  //   fullSurvey:
-  //     state.fullSurvey &&
-  //     Number(state.fullSurvey.id) === Number(action.surveyId)
-  //       ? { ...state.fullSurvey, ...action.updatedFields }
-  //       : state.fullSurvey,
-  //   error: false,
-  //   errorMessage: "",
-  // });
+  const activeSurv = exprInit.funcs.updateSurvey(
+    state[`${exprInit.abbrInit.ACTIVE_SURVEY}`],
+    action[`${exprInit.abbrInit.ACTIVE_SURVEY}`]
+  );
 
   return {
-    fullSurvey:
-      state.fullSurvey &&
-      Number(state.fullSurvey.id) === Number(action.surveyId)
-        ? { ...state.fullSurvey, ...action.updatedFields }
-        : state.fullSurvey,
+    ...state,
+    [`${exprInit.abbrInit.USER_SURVEY_LIST}`]: exprInit.dataInitialize
+      .USER_SURVEY_LIST_INIT,
+    [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: activeSurv,
   };
 };
 
 const deleteSurvey = (state, _) => {
   return funcs.updateObject(state, {
-    surveys: null,
+    [`${exprInit.abbrInit.USER_SURVEY_LIST}`]: exprInit.dataInitialize
+      .USER_SURVEY_LIST_INIT,
+    [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: exprInit.dataInitialize.SURVEY_INIT,
   });
 };
 
 // ================== survey section =========================
 
 const addSection = (state, action) => {
-  const updatedSections = [
-    ...state.fullSurvey.questionSections,
-    action.newSection,
+  const newSec = exprInit.funcs.updateSurvey(
+    state[`${exprInit.abbrInit.ACTIVE_SECTION}`],
+    action[`${exprInit.abbrInit.ACTIVE_SECTION}`]
+  );
+
+  const actvSur = {
+    ...state[`${exprInit.abbrInit.ACTIVE_SURVEY}`],
+  };
+
+  actvSur[`${exprInit.abbrInit.SURVEY_SECTION_COUNT}`] =
+    actvSur[`${exprInit.abbrInit.SURVEY_SECTION_COUNT}`] + 1;
+
+  actvSur[`${exprInit.abbrInit.SURVEY_SECTION_LIST}`] = [
+    ...actvSur[`${exprInit.abbrInit.SURVEY_SECTION_LIST}`],
+    newSec,
   ];
 
-  // return updateObject(state, {
-  //   fullSurvey: { ...state.fullSurvey, questionSections: updatedSections },
-  // });
+  newSec[`${exprInit.abbrInit.FETCHING_DATE}`] = new Date();
+  newSec[`${exprInit.abbrInit.IS_FETCHED}`] = true;
+  newSec[`${exprInit.abbrInit.SURVEY_ID}`] =
+    action[`${exprInit.abbrInit.SURVEY_ID}`];
 
   return {
-    fullSurvey: { ...state.fullSurvey, questionSections: updatedSections },
+    ...state,
+    [`${exprInit.abbrInit.ACTIVE_SURVEY}`]: actvSur,
+    [`${exprInit.abbrInit.ACTIVE_SECTION}`]: newSec,
   };
 };
 
@@ -386,8 +442,7 @@ const removeResponse = (state, action) => {
 
 const fetchSurveysFailed = (state, action) => {
   return updateObject(state, {
-    err: true,
-    errMsg: action.errMsg,
+    [`${exprInit.abbrInit.ERROR}`]: action[`${exprInit.abbrInit.ERROR}`],
   });
 };
 
@@ -415,10 +470,11 @@ const reducer = (state = initialState, action) => {
     case actionTypes.UPDATE_ATTACHMENT_OBJECTS:
       return updateAttachmentObjects(state, action);
 
-    case actionTypes.GET_OPENED_SURVEYS:
-      return getOpenedSurveys(state, action);
-    case actionTypes.GET_SURVEYS:
-      return getSurveys(state, action);
+    case actionTypes.GET_OPEN_SURVEY_LIST:
+      return getOpenSurvList(state, action);
+
+    case actionTypes.GET_USER_SURVEY_LIST:
+      return getUserSurveyList(state, action);
     case actionTypes.GET_FULL_SURVEY:
       return getFullSurvey(state, action);
     case actionTypes.ADD_SURVEY:

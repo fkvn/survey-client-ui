@@ -1,48 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-import * as funcs from "../../../shared/utility";
-import * as actionCreators from "../../../store/actionCreators/Surveys/index";
+import * as exprInit from "../../../export/exportInit";
 import ESurveyNameDescForm from "../../../Components/Form/SurveyFrom/ESurveyNameDescForm";
-import AlertDismissible from "../../../Components/Alert/AlertDismissible";
 
 function UpdateSurveyBuilder(props) {
-  console.log("UpdateSurveyBuilder render");
-  const { survey = {}, show, onHide } = props;
+  const {
+    survey = exprInit.dataInitialize.SURVEY_INIT,
+    handleValidationError = () => {},
+    show,
+    onHide,
+  } = props;
   const dispatch = useDispatch();
 
-  const [request, setRequest] = useState({
-    showSiteMsg: true,
-  });
-
   const handlerOnSubmitHandler = (updatedSurvey) => {
-    dispatch(actionCreators.updateSurvey(survey.id, updatedSurvey));
+    dispatch(
+      exprInit.actionCreators.updateSurvey(
+        survey[`${exprInit.abbrInit.SURVEY_ID}`],
+        updatedSurvey
+      )
+    );
   };
+
+  let survFetchDate = null;
+  try {
+    survFetchDate = exprInit.funcs.dateFormat(
+      survey[`${exprInit.abbrInit.FETCHING_DATE}`]
+    );
+  } catch (error) {}
+
+  useEffect(() => {
+    if (!survFetchDate) {
+      handleValidationError({
+        [`${exprInit.abbrInit.MESSAGE}`]: "Please reload or contact administrations!",
+      });
+    }
+  }, [survFetchDate, handleValidationError]);
 
   const eSurveyNameDescModal = (
     <ESurveyNameDescForm
       show={show}
       onHide={onHide}
       size="lg"
-      sName={survey.name}
-      sDesc={survey.description}
+      sName={survey[`${exprInit.abbrInit.SURVEY_NAME}`]}
+      sDesc={survey[`${exprInit.abbrInit.SURVEY_DESCRIPTION}`]}
       onSubmitHanlder={handlerOnSubmitHandler}
     ></ESurveyNameDescForm>
   );
 
-  const alert = funcs.isEmpty(survey) && request.showSiteMsg && (
-    <AlertDismissible
-      // component will be re-render cuz state is upddated when user click close
-      onClose={() => setRequest({ ...request, showSiteMsg: false })}
-      type="danger"
-      msg={"Couldn't find survey information!!!"}
-    ></AlertDismissible>
-  );
-
   return (
     <>
-      {alert}
-      {!funcs.isEmpty(survey) && eSurveyNameDescModal}
+      {show &&
+        survFetchDate &&
+        survey[`${exprInit.abbrInit.IS_FETCHED}`] &&
+        eSurveyNameDescModal}
     </>
   );
 }

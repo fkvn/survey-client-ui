@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { withRouter, Link } from "react-router-dom";
 import {
   Table,
@@ -10,18 +10,24 @@ import {
   Button,
   Pagination,
   Badge,
+  Form,
 } from "react-bootstrap";
+import ReactLoading from "react-loading";
 
-import * as funcs from "../../shared/utility";
 import SearchForm from "../SearchForm/SearchForm";
-
 import CustomOverlayTrigger from "../CustomOverlayTrigger/CustomOverlayTrigger";
 import PublishSurveyBuilder from "../../Containers/DashboardBuilder/UpdateSurveyBuilders/PublishSurveyBuilder";
 import CloseSurveyBuilder from "../../Containers/DashboardBuilder/UpdateSurveyBuilders/CloseSurveyBuilder";
 import WebLinkSurvey from "../WebLink/WebLinkSurvey";
 
+import * as exprInit from "../../export/exportInit";
+
 function Dashboard(props) {
-  const { surveys = [], charts = [] } = props;
+  const {
+    userSurvList = exprInit.dataInitialize.USER_SURVEY_LIST_INIT,
+    handleValidationError = () => {},
+    // charts = [],
+  } = props;
 
   const [request, setRequest] = useState({
     sortedBy: "",
@@ -31,6 +37,22 @@ function Dashboard(props) {
   const [type, setType] = useState("All");
   const typeList = ["Surveys", "Charts", "All"];
   const dropdownTitle = type ? "Type: " + type : "Type";
+
+  // retrieve fetch date
+  let userSurvFetchDate = null;
+  try {
+    userSurvFetchDate = exprInit.funcs.dateFormat(
+      userSurvList[`${exprInit.abbrInit.FETCHING_DATE}`]
+    );
+  } catch (error) {}
+
+  useEffect(() => {
+    if (!userSurvFetchDate) {
+      handleValidationError({
+        [`${exprInit.abbrInit.MESSAGE}`]: "The survey list is not load probably. Please reload or contact administrations!",
+      });
+    }
+  }, [userSurvFetchDate, handleValidationError]);
 
   const navBar = (
     <Row className="w-100">
@@ -59,13 +81,13 @@ function Dashboard(props) {
 
   const headerMapToObj = {
     Type: "iType",
-    Name: "name",
-    "Created Date": "createdDate",
+    Name: exprInit.serVarInit.SURVEY_NAME,
+    "Created Date": exprInit.serVarInit.SURVEY_DATE_CREATED,
     "Web Link": "iWebLink",
     Status: "iStatus",
-    "Published Date": "publishDate",
-    "Closed Date": "closeDate",
-    "Total Responses": "numberOfResponses",
+    "Published Date": exprInit.serVarInit.SURVEY_DATE_PUBLISHED,
+    "Closed Date": exprInit.serVarInit.SURVEY_DATE_CLOSED,
+    "Total Responses": exprInit.serVarInit.SURVEY_RESPONSE_COUNT,
   };
 
   const updateSortedItems = (attr) => {
@@ -77,11 +99,14 @@ function Dashboard(props) {
   };
 
   const sortedItems = (items, attr, asc) => {
-    if (funcs.isEmpty(items)) return [];
+    if (exprInit.funcs.isEmpty(items)) return [];
 
     let sortedItems = [];
 
-    if (attr === "publishDate" || attr === "closeDate") {
+    if (
+      attr === exprInit.serVarInit.SURVEY_DATE_PUBLISHED ||
+      attr === exprInit.serVarInit.SURVEY_DATE_CLOSED
+    ) {
       sortedItems = items = items.sort((a, b) => {
         if (a["iStatus"] === b["iStatus"]) {
           return a[attr] > b[attr] ? 1 : -1;
@@ -100,24 +125,38 @@ function Dashboard(props) {
 
   let items = [];
 
-  if (surveys) {
+  if (userSurvList[`${exprInit.abbrInit.SURVEY_COUNT}`] > 0) {
     items = [
       ...items,
-      ...surveys.map(
+      ...userSurvList[`${exprInit.abbrInit.SURVEY_LIST}`].map(
         (s) =>
           (s = {
             ...s,
+            id: s[`${exprInit.serVarInit.SURVEY_ID}`],
+            name: s[`${exprInit.serVarInit.SURVEY_NAME}`],
+            createdDate: s[`${exprInit.serVarInit.SURVEY_DATE_CREATED}`],
+            closed: s[`${exprInit.serVarInit.SURVEY_IS_ARCHIVED}`],
+            closeDate: s[`${exprInit.serVarInit.SURVEY_DATE_CLOSED}`],
+            numberOfResponses:
+              s[`${exprInit.serVarInit.SURVEY_RESPONSE_COUNT}`],
             iType: "Survey",
-            iStatus: !s.closed && s.publishDate ? true : false,
-            iWebLink: !s.closed ? true : false,
+
+            iStatus:
+              !s[`${exprInit.serVarInit.SURVEY_DATE_CLOSED}`] &&
+              s[`${exprInit.serVarInit.SURVEY_DATE_PUBLISHED}`]
+                ? true
+                : false,
+            iWebLink: !s[`${exprInit.serVarInit.SURVEY_DATE_CLOSED}`]
+              ? true
+              : false,
           })
       ),
     ];
   }
 
-  if (charts) {
-    items = [...items, ...charts.map((s) => (s = { ...s, iType: "Chart" }))];
-  }
+  // if (charts) {
+  //   items = [...items, ...charts.map((s) => (s = { ...s, iType: "Chart" }))];
+  // }
 
   switch (type) {
     case "Surveys":
@@ -299,8 +338,15 @@ function Dashboard(props) {
 
   return (
     <>
-      {navBar}
-      {list}
+      {userSurvFetchDate ? (
+        <>
+          {navBar}
+          <Form.Text muted>Last Updated: {userSurvFetchDate}</Form.Text>
+          {list}
+        </>
+      ) : (
+        <ReactLoading type={"bars"} color={"black"} />
+      )}
     </>
   );
 }

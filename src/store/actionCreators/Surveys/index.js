@@ -1,6 +1,6 @@
 export {
-  initPublishedSurveys,
-  initSurveys,
+  initOpenSurveyList,
+  initUserSurveyList,
   initFullSurvey,
   addSurvey,
   updateSurvey,
@@ -22,4 +22,6 @@ export {
   removeResponse,
   // testing
   updateAttachmentObjects,
+  // error
+  handleValidationError,
 } from "./actionCreators";

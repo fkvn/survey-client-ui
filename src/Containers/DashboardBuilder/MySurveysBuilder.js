@@ -3,67 +3,39 @@ import { useSelector, useDispatch } from "react-redux";
 import { Redirect, useLocation } from "react-router-dom";
 import ReactLoading from "react-loading";
 
-import * as actionCreators from "../../store/actionCreators/Surveys/index";
 import MySurveys from "../../Components/Dashboard/MySurveys/MySurveys";
-import AlertDismissible from "../../Components/Alert/AlertDismissible";
+
+import * as exprInit from "../../export/exportInit";
 
 function MySurveysBuilder() {
   const dispatch = useDispatch();
 
   const params = new URLSearchParams(useLocation().search).entries();
 
-  const surveys = useSelector((state) => state.surveyBuilder.surveys);
+  // data from redux store
+  const userSurvList = useSelector(
+    (state) => state.surveyBuilder[`${exprInit.abbrInit.USER_SURVEY_LIST}`]
+  );
 
-  const err = useSelector((state) => state.surveyBuilder.err);
-  const errMsg = useSelector((state) => state.surveyBuilder.errMsg);
-
-  const [request, setRequest] = useState({
-    showSiteMsg: false,
-
-    siteMsg: {
-      type: "info",
-      heading: "",
-      msg: "This is an alert message!",
-    },
-  });
-
-  const loading = useRef(true);
+  // dispatch from redux store
+  const InitUserSurvList = () => {
+    dispatch(exprInit.actionCreators.initUserSurveyList());
+  };
 
   useEffect(() => {
-    if (loading.current || !surveys) {
-      setTimeout(() => dispatch(actionCreators.initSurveys()), 100);
-      loading.current = false;
+    if (!userSurvList[`${exprInit.abbrInit.IS_FETCHED}`]) {
+      setTimeout(() => {
+        InitUserSurvList();
+      }, 500);
     }
   });
 
-  if (
-    err &&
-    request.siteMsg.type !== "danger" &&
-    errMsg !== request.siteMsg.msg
-  ) {
-    // re-render request and update state
-    setRequest({
-      ...request,
-      showSiteMsg: true,
-      siteMsg: {
-        type: "danger",
-        heading: "Oh snap! You got an error!",
-        msg: errMsg,
-      },
-    });
-  }
+  console.log("MySurvey builder");
+  // console.log(userSurvList);
 
-  const siteMsgComp = request.showSiteMsg ? (
-    <AlertDismissible
-      // component will be re-render cuz state is upddated when user click close
-      onClose={() => setRequest({ ...request, showSiteMsg: false })}
-      type={request.siteMsg.type}
-      heading={request.siteMsg.heading}
-      msg={request.siteMsg.msg}
-    >
-      {" "}
-    </AlertDismissible>
-  ) : null;
+  const handleValidationError = (error) => {
+    dispatch(exprInit.actionCreators.handleValidationError(error));
+  };
 
   return (
     <>
@@ -75,9 +47,13 @@ function MySurveysBuilder() {
         // return;
       }
       <div className="m-5">
-        {siteMsgComp}
-        {!loading.current && surveys ? (
-          <MySurveys surveys={surveys}></MySurveys>
+        {userSurvList[`${exprInit.abbrInit.IS_FETCHED}`] ? (
+          <>
+            <MySurveys
+              userSurvList={userSurvList}
+              handleValidationError={handleValidationError}
+            />
+          </>
         ) : (
           <ReactLoading type={"bars"} color={"black"} />
         )}
