@@ -12,6 +12,12 @@ export const sortableObjectByValue = (obj = {}) => {
     .reduce((r, [k, _], rank) => ({ ...r, [k]: rank + 1 }), {});
 };
 
+export function round(value, places) {
+  var multiplier = Math.pow(10, places);
+
+  return Math.round(value * multiplier) / multiplier;
+}
+
 export const toSentenceCase = (inputStr = "") => {
   if (!inputStr) return "";
 

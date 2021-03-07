@@ -33,7 +33,7 @@ import * as actions from "./actions";
 export const initPublishedSurveys = () => {
   return (dispatch) => {
     axios
-      .get("/surveys/opened")
+      .get("/surveys/open")
       .then((response) => {
         dispatch(actions.getOpenedSurvyes(response.data ? response.data : []));
       })

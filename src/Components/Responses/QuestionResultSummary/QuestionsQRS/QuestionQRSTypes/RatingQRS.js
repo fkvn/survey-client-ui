@@ -1,14 +1,22 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Accordion,
   AccordionContext,
+  Button,
   Card,
+  Col,
+  Form,
   ListGroup,
+  Row,
   Table,
   useAccordionToggle,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import CustomOverlayTrigger from "../../../../CustomOverlayTrigger/CustomOverlayTrigger";
+
+import * as funcs from "../../../../../shared/utility";
+import ColChart from "../../../../Chart/ColChart";
+import AdvancedChart from "../../../../Chart/AdvancedChart";
 
 function RatingQRS(props) {
   const { question = {}, questionQRS = {} } = props;
@@ -73,6 +81,134 @@ function RatingQRS(props) {
     </Accordion>
   );
 
+  const [request, setRequest] = useState({
+    showSummChart: false,
+    showAdvancedChart: false,
+  });
+
+  const getAverageRating = () => {
+    let avg = 0;
+    for (const key in questionQRS.ratingResponses) {
+      avg =
+        avg + Number(key) * questionQRS.ratingResponses[key].responses.length;
+    }
+    avg = avg / questionQRS.totalResponses;
+    return funcs.round(Number(avg), 2);
+  };
+
+  const getMaxRating = () => {
+    let max = 0;
+
+    for (const key in questionQRS.ratingResponses) {
+      if (
+        key > 0 &&
+        key > max &&
+        questionQRS.ratingResponses[key].responses.length > 0
+      ) {
+        max = key;
+      }
+    }
+    return max;
+  };
+
+  const getMinRating = () => {
+    let min = question.ratingScale;
+
+    for (const key in questionQRS.ratingResponses) {
+      if (Object.hasOwnProperty.call(questionQRS.ratingResponses, key)) {
+        const resGroup = questionQRS.ratingResponses[key];
+        if (key > 0 && key < min && resGroup.responses.length > 0) {
+          min = key;
+        }
+      }
+    }
+
+    return min;
+  };
+
+  const chartInfo = {
+    title: "Group Chart",
+    yAxis: {
+      allowDecimals: false,
+      min: 0,
+      title: {
+        text: "Average Rating",
+      },
+    },
+    tooltip: {
+      headerFormat: '<span style="font-size:20px">{point.key}</span><table>',
+      pointFormat:
+        '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+      footerFormat: "</table>",
+      shared: true,
+      useHTML: true,
+    },
+    series: [
+      {
+        data: ["NaN", "NaN", 4.0, "NaN"],
+        name: "1",
+        stack: 0,
+      },
+      {
+        data: [2.5, 7.0, 5.5, 5.0],
+        name: "2",
+        stack: 1,
+      },
+      {
+        data: ["NaN", "NaN", 4.0, 6.0],
+        name: "3",
+        stack: 2,
+      },
+      {
+        data: ["NaN", "NaN", 4.0, "NaN"],
+        name: "4",
+        stack: 4,
+      },
+    ],
+    categories: [2012, 2015, 2020, 2022],
+  };
+
+  const summaryChartInfo = {
+    title: "Summary Chart",
+    yAxis: {
+      allowDecimals: false,
+      min: 0,
+      title: {
+        text: "Number of responses",
+      },
+    },
+    tooltip: {
+      headerFormat:
+        '<span style="font-size:20px">Rate: {point.key}</span><table>',
+      pointFormat:
+        '<tr><td style="color:{series.color};padding:0">Series: </td>' +
+        '<td style="padding:0"><b>{series.name}</b></td></tr>' +
+        '<tr><td style="color:{series.color};padding:0">#Reponses: </td>' +
+        '<td style="padding:0"><b>{point.y:1.f}</b></td></tr>',
+
+      footerFormat: "</table>",
+      shared: true,
+      useHTML: true,
+    },
+    categories: [...Object.keys(questionQRS.ratingResponses)],
+    series: [
+      {
+        name: "Anonymous",
+        // data: [],
+        data: Object.keys(questionQRS.ratingResponses).reduce(
+          (data, key) => [
+            ...data,
+            questionQRS.ratingResponses[key].responses.length,
+          ],
+          []
+        ),
+      },
+    ],
+  };
+
+  console.log(questionQRS);
+
   const MainDisplay = ({ question = {}, questionQRS = {} }) => {
     return (
       <>
@@ -82,6 +218,18 @@ function RatingQRS(props) {
               <strong>Summary</strong>
             </Card.Header>
             <Card.Body>
+              <Row className="mb-2">
+                <Col>
+                  Average: <strong>{getAverageRating()}</strong>
+                </Col>
+                <Col>
+                  Min: <strong>{getMinRating()}</strong>
+                </Col>
+                <Col>
+                  Max: <strong>{getMaxRating()}</strong>
+                </Col>
+              </Row>
+
               <Table responsive hover size="sm" className="m-2">
                 <thead>
                   <tr>
@@ -106,6 +254,35 @@ function RatingQRS(props) {
                   ))}
                 </tbody>
               </Table>
+
+              <Button
+                variant="link"
+                onClick={() =>
+                  setRequest({
+                    ...request,
+                    showSummChart: !request.showSummChart,
+                  })
+                }
+              >
+                Show Summary Chart
+              </Button>
+
+              {request.showSummChart && (
+                <ColChart chartInfo={summaryChartInfo} />
+              )}
+              <br></br>
+              <Button
+                variant="link"
+                onClick={() =>
+                  setRequest({
+                    ...request,
+                    showAdvancedChart: !request.showAdvancedChart,
+                  })
+                }
+              >
+                Advanced Chart
+              </Button>
+              {request.showAdvancedChart && <AdvancedChart />}
             </Card.Body>
           </Card>
         )}

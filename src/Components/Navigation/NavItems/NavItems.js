@@ -3,8 +3,16 @@ import { Nav, Button } from "react-bootstrap";
 import SearchForm from "./../../SearchForm/SearchForm";
 import { Switch, Route } from "react-router-dom";
 import NavLinks from "./NavLinks/NavLinks";
+import axios from "axios";
+import { useAuth } from "oidc-react";
+const aliceLink =
+  "oidc.user:https://identity.cysun.org:alice-survey-service-spa";
 
-export default function navItems(props) {
+export default function NavItems(props) {
+  const auth = useAuth();
+
+  console.log(auth);
+
   return (
     <>
       <Nav className="mr-auto w-100">
@@ -18,10 +26,34 @@ export default function navItems(props) {
       <div className="mr-sm-2">
         <Switch>
           <Route path="/dashboard">
-            <Button variant="outline-success">Logout</Button>
+            <Button
+              variant="outline-success"
+              onClick={() => {
+                axios
+                  .get("https://identity.cysun.org/Account/Logout")
+                  .then(() => {
+                    window.sessionStorage.removeItem(aliceLink);
+                    window.sessionStorage.removeItem("canvasToken");
+                    window.location.reload(false);
+                  });
+              }}
+            >
+              Logout
+            </Button>
           </Route>
           <Route path="/">
-            <Button variant="outline-success">Login</Button>
+            <Button
+              variant="outline-success"
+              onClick={() => {
+                console.log("log out");
+
+                window.sessionStorage.removeItem(aliceLink);
+                window.sessionStorage.removeItem("canvasToken");
+                window.location.reload(false);
+              }}
+            >
+              Login
+            </Button>
           </Route>
         </Switch>
       </div>

@@ -7,6 +7,7 @@ import NotFoundPage from "./NotFoundPage";
 import SurveyBuilder from "./Containers/SurveyBuilder/SurveyBuilder";
 import ControllerBuilder from "./Containers/DashboardBuilder/ControllerBuilder";
 import SubmitSurveyBuilder from "./Containers/SurveyBuilder/SubmitSurveyBuilder";
+import OIDCHandler from "./Components/OIDCHandler";
 
 function App() {
   const history = useHistory();
@@ -65,7 +66,7 @@ function App() {
                 </div>
               </Jumbotron>
             </Route>
-
+            <Route path="/auth" exact component={OIDCHandler}></Route>
             <Route path="*" component={NotFoundPage} />
           </Switch>
         </Layout>
