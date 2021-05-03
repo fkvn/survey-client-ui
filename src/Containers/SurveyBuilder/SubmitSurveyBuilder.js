@@ -5,7 +5,8 @@ import ReactLoading from "react-loading";
 
 import * as actionCreators from "../../store/actionCreators/Surveys/index";
 import SurveyResponse from "../../Components/Surveys/SurveyResponse";
-import AlertDismissible from "../../Components/Alert/AlertDismissible";
+
+import * as exprt from "../../shared/export";
 
 function SubmitSurveyBuilder(props) {
   const dispatch = useDispatch();
@@ -14,102 +15,85 @@ function SubmitSurveyBuilder(props) {
   const params = new URLSearchParams(useLocation().search);
   const sId = Number(params.get("sId"));
 
-  const fullSurvey = useSelector((state) => state.surveyBuilder.fullSurvey);
-  const err = useSelector((state) => state.surveyBuilder.err);
-  const errMsg = useSelector((state) => state.surveyBuilder.errMsg);
+  const fullSurvey = useSelector(
+    (state) => state.surveyBuilder[`${exprt.props.STATE_FULL_SURVEY}`]
+  );
 
-  console.log("SubmitSurveyBuilder render");
   const loading = useRef(true);
+  let isEditable = true;
+  let isRender = false;
 
-  const [request, setRequest] = useState({
-    showSiteMsg: false,
+  // ================================= functions =========================
 
-    siteMsg: {
-      type: "info",
-      heading: "",
-      msg: "This is an alert message!",
-    },
-  });
+  const initFullSurvey = (id) => {
+    setTimeout(() => dispatch(actionCreators.initFullSurvey(id)), 100);
+  };
 
+  const initError = (message) => {
+    dispatch(actionCreators.initError(message, exprt.props.VALIDATION_ERROR));
+  };
+
+  const handlerOnSubmitResponse = (response) => {
+    // // console.log(response);
+    dispatch(actionCreators.addResponse(fullSurvey.id, response)).then(
+      (success) => {
+        if (success) {
+          localStorage.removeItem(`survey:${fullSurvey.id}`);
+          history.push(`/surveys/response/successful`);
+        } else {
+          history.push(`/surveys/response/unsuccessful`);
+        }
+      }
+    );
+  };
+
+  // ================================= hooks =========================
   useEffect(() => {
-    if (
-      loading.current ||
-      !fullSurvey ||
-      Number(fullSurvey.id) !== Number(sId)
-    ) {
-      setTimeout(() => dispatch(actionCreators.initFullSurvey(sId)), 100);
+    if (loading.current) {
+      initFullSurvey(sId);
       loading.current = false;
     }
   });
 
-  // update siteMsg for err
-  if (
-    err &&
-    request.siteMsg.type !== "danger" &&
-    errMsg !== request.siteMsg.msg
-  ) {
-    // re-render request and update state
-    setRequest({
-      ...request,
-      showSiteMsg: true,
-      siteMsg: {
-        type: "danger",
-        heading: "Oh snap! You got an error!",
-        msg: errMsg,
-      },
-    });
-  }
+  // unavailable to update
+  useEffect(() => {
+    if (!isEditable) {
+      let message = "The survey is either not available or has been deleted!";
 
-  // update siteMsg for unvalid survey update
-  if (
-    fullSurvey &&
-    (fullSurvey.closed || !fullSurvey.publishDate) &&
-    !request.showSiteMsg
-  ) {
-    // re-render request and update state
-    setRequest({
-      ...request,
-      showSiteMsg: true,
-      siteMsg: {
-        type: "danger",
-        heading: "Oh snap! Survey is unavailable!",
-        msg:
-          "The survey is either no longer available or the link is expired!!!",
-      },
-    });
-  }
-
-  const siteMsgComp = request.showSiteMsg ? (
-    <AlertDismissible
-      // component will be re-render cuz state is upddated when user click close
-      onClose={() => setRequest({ ...request, showSiteMsg: false })}
-      type={request.siteMsg.type}
-      heading={request.siteMsg.heading}
-      msg={request.siteMsg.msg}
-    >
-      {" "}
-    </AlertDismissible>
-  ) : null;
-
-  const handlerOnSubmitResponse = (response) => {
-    // console.log(response);
-    dispatch(actionCreators.addResponse(fullSurvey.id, response)).then((id) => {
-      if (id) {
-        history.push(`/surveys/response/successful`);
-      } else {
-        history.push(`/surveys/response/unsuccessful`);
+      if (Number(fullSurvey[`${exprt.props.SURVEY_ID}`]) !== Number(sId)) {
+        message = "Unavailable survey !!!";
       }
-    });
-  };
 
-  return (
+      initError(message);
+    }
+  }, [fullSurvey]);
+
+  // ================================= logic flow =========================
+
+  // check if survey is allowed to edit
+  if (
+    fullSurvey[`${exprt.props.IS_FETCHED}`] &&
+    (fullSurvey[`${exprt.props.SURVEY_IS_CLOSED}`] ||
+      !fullSurvey[`${exprt.props.SURVEY_PUBLISHED_DATE}`] ||
+      Number(fullSurvey[`${exprt.props.SURVEY_ID}`]) !== Number(sId))
+  ) {
+    isEditable = false;
+  }
+
+  // check if the component is able to render
+  if (
+    !loading.current &&
+    isEditable &&
+    fullSurvey[`${exprt.props.IS_FETCHED}`] &&
+    Number(fullSurvey[`${exprt.props.SURVEY_ID}`]) === Number(sId)
+  ) {
+    isRender = true;
+  }
+
+  const returnRender = (
     <>
       <div className="m-5">
-        {siteMsgComp}
-        {!loading.current &&
-        fullSurvey &&
-        !fullSurvey.closed &&
-        fullSurvey.publishDate ? (
+        {isRender ? (
           <SurveyResponse
             mode="Submit"
             survey={fullSurvey}
@@ -121,6 +105,8 @@ function SubmitSurveyBuilder(props) {
       </div>
     </>
   );
+
+  return <> {returnRender} </>;
 }
 
 export default SubmitSurveyBuilder;

@@ -1,11 +1,13 @@
 import React from "react";
 import FormModal from "../../Modal/FormModal";
 import { Form } from "react-bootstrap";
+import * as exprt from "../../../shared/export";
 
 function DeleteSurveyForm(props) {
+  // ============================ init =======================
   const {
-    show,
-    onHide,
+    show = false,
+    onHide = () => {},
 
     heading = "Delete Survey",
     headingColor = "text-danger",
@@ -13,27 +15,44 @@ function DeleteSurveyForm(props) {
     submitTitleVariant = "danger",
     size,
 
-    survey,
-    onDeleteSurveySubmit,
+    survey = exprt.db.initDb.FULL_SURVEY_INIT,
+    deleteSurvey = () => {},
   } = props;
 
+  let isRender = false;
+
+  // ============================ functions=======================
+  const handlerOnSubmit = () => {
+    deleteSurvey(survey[`${exprt.props.SURVEY_ID}`]);
+    onHide();
+  };
+
+  // ============================ logic flow =======================
+  if (show && survey[`${exprt.props.SURVEY_ID}`] > -1) {
+    isRender = true;
+  }
+
+  // ============================ sub-components =======================
   const modal = (
     <FormModal
       show={show}
       onHide={onHide}
-      onSubmit={() => onDeleteSurveySubmit(survey && survey.id)}
+      onSubmit={handlerOnSubmit}
       heading={heading}
       headingColor={headingColor}
       submitTitle={submitTitle}
       submitTitleVariant={submitTitleVariant}
       size={size}
     >
-      <Form.Group controlId="exampleForm.ControlInput1">
+      <Form.Group controlId="ControlInput1">
         <Form.Label className="">
           <strong>
             The survey{" "}
-            <span className="text-danger">{survey && survey.name}</span> and all
-            related sections as well as questions will be deleted permantely.
+            <span className="text-danger">
+              {survey[`${exprt.props.SURVEY_NAME}`]}
+            </span>{" "}
+            and all related sections as well as questions will be deleted
+            permantely.
           </strong>
         </Form.Label>
 
@@ -56,7 +75,8 @@ function DeleteSurveyForm(props) {
       </Form.Group>
     </FormModal>
   );
-  return <>{modal} </>;
+
+  return isRender && modal;
 }
 
 export default DeleteSurveyForm;

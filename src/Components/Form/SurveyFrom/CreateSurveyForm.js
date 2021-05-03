@@ -1,19 +1,44 @@
 import React, { useRef } from "react";
 import FormModal from "../../Modal/FormModal";
 import { Form } from "react-bootstrap";
+import * as exprt from "../../../shared/export";
 
 function CreateSurveyForm(props) {
+  // ========================== init ==============================
+
   const {
-    show,
-    onHide,
+    show = false,
+    onHide = () => {},
     heading = "Create Survey",
     submitTitle = "Create",
     submitTitleVariant = "success",
 
-    onCreateSurveySubmit,
+    onCreateSurveySubmit = () => {},
   } = props;
 
   const sName = useRef();
+
+  const types = ["Anonymous", "Named", "Recorded"];
+  const sType = useRef();
+
+  const sDescription = useRef();
+  const sSection = useRef(1);
+
+  // ========================== functions ==============================
+
+  const handlerOnSubmit = () => {
+    const newSurvey = {
+      [`${exprt.props.SURVEY_NAME}`]: sName.current.value,
+      [`${exprt.props.SURVEY_TYPE}`]: sType.current.value.toUpperCase(),
+      [`${exprt.props.SURVEY_DESCRIPTION}`]: sDescription.current.value,
+      [`${exprt.props.SECTION_COUNT}`]: Number(sSection.current.value),
+    };
+    onCreateSurveySubmit(newSurvey);
+    onHide();
+  };
+
+  // ========================== sub-components ==============================
+
   const sNameFGroup = (
     <Form.Group controlId="SurveyName.ControlText">
       <Form.Label className="text-info">
@@ -32,8 +57,6 @@ function CreateSurveyForm(props) {
     </Form.Group>
   );
 
-  const sType = useRef();
-  const types = ["Anonymous", "Named", "Recorded"];
   const sTypeFGroup = (
     <Form.Group controlId="SurveyType.ControlSelect">
       <Form.Label className="text-info">
@@ -47,7 +70,6 @@ function CreateSurveyForm(props) {
     </Form.Group>
   );
 
-  const sDescription = useRef();
   const sDescriptionFGroup = (
     <Form.Group controlId="exampleForm.ControlTextarea1">
       <Form.Label className="text-info">
@@ -62,7 +84,6 @@ function CreateSurveyForm(props) {
     </Form.Group>
   );
 
-  const sSection = useRef(1);
   const sSectionFGroup = (
     <Form.Group controlId="SurveyName.ControlText">
       <Form.Label className="text-info">
@@ -83,15 +104,6 @@ function CreateSurveyForm(props) {
     </Form.Group>
   );
 
-  const handlerOnSubmit = () => {
-    const newSurvey = {
-      name: sName.current.value,
-      type: sType.current.value.toUpperCase(),
-      description: sDescription.current.value,
-      numberOfSections: Number(sSection.current.value),
-    };
-    onCreateSurveySubmit(newSurvey);
-  };
   const modal = (
     <>
       <FormModal

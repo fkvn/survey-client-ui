@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import FormModal from "../../Modal/FormModal";
 import { Form } from "react-bootstrap";
 
+import * as exprt from "../../../shared/export";
+
 function AddSectionForm(props) {
   const {
     show,
@@ -21,10 +23,11 @@ function AddSectionForm(props) {
 
   const handlerOnSubmit = () => {
     const newSection = {
-      description: descRef.current.value,
+      [`${exprt.props.SECTION_DESCRIPTION}`]: descRef.current.value,
     };
 
     onAddSectionSubmit(newSection);
+    onHide();
   };
 
   const modal = (

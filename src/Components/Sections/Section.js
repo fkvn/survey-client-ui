@@ -1,55 +1,88 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Form, Button } from "react-bootstrap";
 import Questions from "../Questions/Questions";
 import * as funcs from "../../shared/utility";
 
+import DescriptionDisplay from "../DescriptionDisplay/DescriptionDisplay";
+
+import * as exprt from "../../shared/export";
+import QuestionBuilder from "../../Containers/DashboardBuilder/QuestionBuilders/QuestionBuilder";
+import CreateQuestionBuilder from "../../Containers/DashboardBuilder/QuestionBuilders/CreateQuestionBuilder";
+
 function Section(props) {
+  // ================================= init =========================
   const {
-    surveyId,
-    section = {},
+    surveyId = -1,
+    section = exprt.db.initDb.SECTION_INIT,
+    readOnly = true,
     activeQuestion,
     addQuestionShow,
     updateQuestionAfterDeleted,
     updateQuestionAfterUpdated,
   } = props;
 
-  const DisplayDescription = ({ description }) => {
-    return (
-      <Card.Text className="ml-2 mb-3">
-        {description && <strong>Description: </strong>}
-        <em>{description}</em>
-      </Card.Text>
-    );
-  };
+  const [request, setRequest] = useState({
+    showAddQuestionModal: false,
+  });
 
-  const MainDisplay = ({ sec, activeQuestion }) => (
+  let isRender = false;
+
+  // ================================= logic flow =========================
+  if (
+    surveyId > -1 &&
+    section[`${exprt.props.SECTION_ID}`] > -1 &&
+    section[`${exprt.props.SECTION_INDEX}`] > -1
+  ) {
+    isRender = true;
+  }
+
+  // ================================= sub-components =========================
+
+  const addQuestionModal = request.showAddQuestionModal && (
+    <CreateQuestionBuilder
+      surveyId={surveyId}
+      section={section}
+      show={true}
+      onHide={() => setRequest({ ...request, showAddQuestionModal: false })}
+    />
+  );
+
+  const returnRender = (
     <>
-      <DisplayDescription description={sec.description}></DisplayDescription>
-      {sec.questions.length > 0 && (
-        <Questions
-          surveyId={surveyId}
-          section={section}
-          questions={sec.questions}
-          defaultActiveQuestion={activeQuestion}
-          updateQuestionAfterDeleted={updateQuestionAfterDeleted}
-          updateQuestionAfterUpdated={updateQuestionAfterUpdated}
-        />
+      {/* modals */}
+      {!readOnly && request.showAddQuestionModal && addQuestionModal}
+
+      {/* components */}
+      <DescriptionDisplay
+        description={section[`${exprt.props.SECTION_DESCRIPTION}`]}
+        title="section"
+        className="py-4"
+      />
+
+      {!readOnly && (
+        <Form.Group className="pl-2">
+          <Button
+            variant="primary"
+            className="mt-3"
+            onClick={() =>
+              setRequest({ ...request, showAddQuestionModal: true })
+            }
+          >
+            Add Question
+          </Button>
+        </Form.Group>
       )}
-      <Form.Group className={sec.questions.length > 0 ? "ml-5" : ""}>
-        <Button variant="success" onClick={addQuestionShow}>
-          Add Question
-        </Button>
-      </Form.Group>
+
+      <QuestionBuilder
+        surveyId={surveyId}
+        section={section}
+        questions={section[`${exprt.props.QUESTION_LIST}`]}
+        readOnly={readOnly}
+      />
     </>
   );
 
-  return (
-    <>
-      {surveyId && !funcs.isEmpty(section) && (
-        <MainDisplay sec={section} activeQuestion={activeQuestion} />
-      )}
-    </>
-  );
+  return isRender && returnRender;
 }
 
 export default Section;

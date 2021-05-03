@@ -2,6 +2,7 @@ import React from "react";
 import { Form } from "react-bootstrap";
 
 import FormModal from "../../Modal/FormModal";
+import * as exprt from "../../../shared/export";
 
 function DeleteResponseForm(props) {
   const {
@@ -22,7 +23,9 @@ function DeleteResponseForm(props) {
     <FormModal
       show={show}
       onHide={onHide}
-      onSubmit={() => onDeleteResponseSubmit(response.id)}
+      onSubmit={() =>
+        onDeleteResponseSubmit(response[`${exprt.props.RESPONSE_ID}`])
+      }
       heading={heading}
       headingColor={headingColor}
       submitTitle={submitTitle}
@@ -34,7 +37,8 @@ function DeleteResponseForm(props) {
           <strong>
             The respondent{" "}
             <span className="text-danger">
-              {response.type} ({response.date})
+              {response[`${exprt.props.RESPONSE_TYPE}`]} (
+              {response[`${exprt.props.RESPONSE_DATE}`]})
             </span>{" "}
             and all related data will be removed.
           </strong>

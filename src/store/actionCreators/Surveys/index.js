@@ -1,16 +1,20 @@
 export {
-  initPublishedSurveys,
-  initSurveys,
+  initOpenSurveys,
+  initUserSurveys,
   initFullSurvey,
   addSurvey,
   updateSurvey,
+  publishSurvey,
+  closeSurvey,
   deleteSurvey,
   // section
+  setActiveSection,
   addSection,
   updateSection,
   updateSectionIndex,
   deleteSection,
   // question
+  setActiveQuestion,
   addQuestion,
   updateQuestion,
   updateQuestionIndex,
@@ -20,6 +24,19 @@ export {
   getResponse,
   addResponse,
   removeResponse,
+  // response group
+  initResponseGroups,
+  addResponseGroup,
+  addResponseGroupAutoYear,
+  deleteResponseGroup,
+  // question summaries
+  initQuestionSummaries,
+  // charts
+  initQuestionAdvanceCharts,
+  addChart,
+  updateChart,
   // testing
   updateAttachmentObjects,
+  // error
+  initError,
 } from "./actionCreators";

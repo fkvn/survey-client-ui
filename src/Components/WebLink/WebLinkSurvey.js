@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 function WebLinkSurvey(props) {
   const { survey } = props;
 
-  const url = `/surveys/response/submit?sId=${survey.id}`;
+  const url = `/#/surveys/response/submit?sId=${survey.id}`;
   const fullUrl = `${window.location.origin}${url}`;
 
   const [msg, setMsg] = useState("");

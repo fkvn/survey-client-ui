@@ -1,96 +1,59 @@
-import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, Form } from "react-bootstrap";
 import ReactLoading from "react-loading";
 
 import * as actionCreators from "../../store/actionCreators/Surveys/index";
 import ResponseSummary from "../../Components/Responses/ResponseSummary";
-import CustomBreadcrumb from "../../Components/CustomBreadcrumb/CustomBreadcrumb";
-import IconButton from "../../Components/CustomButton/IconButton";
+
+import * as exprt from "../../shared/export";
 
 function ResponseSummaryBuilder(props) {
-  const { survey = {} } = props;
+  const { survey = exprt.db.initDb.FULL_SURVEY_INIT } = props;
 
-  const history = useHistory();
   const dispatch = useDispatch();
-  const responses = useSelector((state) => state.surveyBuilder.responses);
+
+  const responses = useSelector(
+    (state) => state.surveyBuilder[`${exprt.props.STATE_SURVEY_RESPONSES}`]
+  );
+
+  const loading = useRef(true);
+  let isRender = false;
+
+  // ================================= functions =========================
+
+  const initResponsesFromSurvey = (surveyId) => {
+    setTimeout(() => dispatch(actionCreators.getResponses(surveyId)), 500);
+  };
+
+  // ================================= hooks =========================
 
   useEffect(() => {
-    if (survey.id && !responses) {
-      setTimeout(() => dispatch(actionCreators.getResponses(survey.id)), 500);
+    if (loading.current) {
+      initResponsesFromSurvey(survey[`${exprt.props.SURVEY_ID}`]);
+      loading.current = false;
     }
   });
 
-  const ReponseOption = () => {
-    const questionSummary = {
-      type: "Summary Result",
-      title: "Question summary",
-      onClick: () =>
-        history.push(
-          `/dashboard/mysurveys/survey/${survey.id}/responses/questionSummary`
-        ),
-    };
+  // ================================= logic flow =========================
 
-    const allowedOptions = [{ ...questionSummary }];
+  // check if the component is able to render
+  if (
+    !loading.current &&
+    Number(survey[`${exprt.props.SURVEY_ID}`]) > -1 &&
+    responses[`${exprt.props.IS_FETCHED}`]
+  ) {
+    isRender = true;
+  }
 
-    return (
-      <>
-        {allowedOptions.map((op, i) => (
-          <IconButton
-            type={op.type}
-            title={op.title}
-            onClickHandler={op.onClick}
-            key={i}
-            index={i}
-            btnClassName="m-0 p-2"
-            disabled={op.disabled ? true : false}
-          />
-        ))}
-      </>
-    );
-  };
-
-  const breadcumbItems = [
-    {
-      title: "My Surveys",
-      onClick: () => history.push(`/dashboard/mysurveys`),
-    },
-
-    {
-      title: survey && survey.name ? survey.name : "[Unknown Survey Name]",
-      onClick: () =>
-        history.push(`/dashboard/mysurveys/survey?sId=${survey && survey.id}`),
-    },
-    {
-      title: "responses",
-      onClick: () =>
-        history.push(
-          `/dashboard/mysurveys/survey/${survey && survey.id}/responses`
-        ),
-    },
-  ];
-
-  const Breadcrumb = ({ breadcumbItems = [] }) => (
-    <>
-      {breadcumbItems.length > 0 && (
-        <Form.Group controlId="titleNavBar">
-          <Card.Header className="p-0">
-            <CustomBreadcrumb items={breadcumbItems} iconClassname="ml-1" />
-            <div className="float-right">
-              <ReponseOption />
-            </div>
-          </Card.Header>
-        </Form.Group>
-      )}
-    </>
-  );
+  // ================================= sub-components =========================
 
   return (
     <>
-      <Breadcrumb breadcumbItems={breadcumbItems} />
-      {survey.id && responses ? (
-        <ResponseSummary responses={responses} survey={survey} />
+      {isRender ? (
+        <ResponseSummary
+          responses={responses[`${exprt.props.RESPONSE_LIST}`]}
+          survey={survey}
+        />
       ) : (
         <ReactLoading type={"bars"} color={"black"} />
       )}

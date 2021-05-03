@@ -22,6 +22,20 @@ export const getIndexById = (items = [], itemId) => {
   );
 };
 
+export const sortableObjectByValue = (obj = {}) => {
+  if (isEmpty(obj)) return [];
+
+  return Object.entries(obj)
+    .sort(([, a], [, b]) => b - a)
+    .reduce((r, [k, _], rank) => ({ ...r, [k]: rank + 1 }), {});
+};
+
+export function round(value, places) {
+  var multiplier = Math.pow(10, places);
+
+  return Math.round(value * multiplier) / multiplier;
+}
+
 export const updateSortedTitles = (
   currentSortedAttr,
   currentOrderByAsc,

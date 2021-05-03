@@ -7,6 +7,7 @@ import NotFoundPage from "./NotFoundPage";
 import SurveyBuilder from "./Containers/SurveyBuilder/SurveyBuilder";
 import ControllerBuilder from "./Containers/DashboardBuilder/ControllerBuilder";
 import SubmitSurveyBuilder from "./Containers/SurveyBuilder/SubmitSurveyBuilder";
+import OIDCHandler from "./Components/Auth/OIDCHandler";
 
 function App() {
   const history = useHistory();
@@ -19,7 +20,7 @@ function App() {
           <Switch>
             <Route path="/" exact component={SurveyBuilder}></Route>
             <Route path="/dashboard" component={ControllerBuilder}></Route>
-            <Route path="/surveys/response/submit" exact>
+            <Route path="/surveys/response/submit">
               <SubmitSurveyBuilder />
             </Route>
             <Route path="/surveys/response/successful" exact>
@@ -65,7 +66,9 @@ function App() {
                 </div>
               </Jumbotron>
             </Route>
-
+            <Route path="/auth" exact>
+              <OIDCHandler />
+            </Route>
             <Route path="*" component={NotFoundPage} />
           </Switch>
         </Layout>

@@ -7,8 +7,16 @@ import InvRankingDisplay from "./InvRankingDisplay";
 import InvRatingDisplay from "./InvRatingDisplay";
 import InvTextDisplay from "./InvTextDisplay";
 
+import * as exprt from "../../../shared/export";
+
 function InvQuestionDisplay(props) {
   const { questions = [], answers = [] } = props;
+
+  let isRender = false;
+
+  if (questions.length > 0 && questions.length === answers.length) {
+    isRender = true;
+  }
 
   const MainDisplay = ({ questions = [], answers = [] }) => {
     return (
@@ -39,8 +47,8 @@ function InvQuestionDisplay(props) {
                         <span
                           dangerouslySetInnerHTML={{
                             __html: funcs.updateQDescImgs(
-                              answer.description,
-                              answer.attachments
+                              answer[`${exprt.props.ANSWER_DESCRIPTION}`],
+                              answer[`${exprt.props.ANSWER_ATTACHMENTS}`]
                             ),
                           }}
                         />
@@ -82,13 +90,14 @@ function InvQuestionDisplay(props) {
     );
   };
 
-  return (
-    <>
-      {questions.length > 0 && questions.length === answers.length && (
-        <MainDisplay questions={questions} answers={answers} />
-      )}{" "}
-    </>
-  );
+  // return (
+  //   <>
+  //     {questions.length > 0 && questions.length === answers.length && (
+  //       <MainDisplay questions={questions} answers={answers} />
+  //     )}{" "}
+  //   </>
+  // );
+  return isRender && <MainDisplay questions={questions} answers={answers} />;
 }
 
 export default InvQuestionDisplay;

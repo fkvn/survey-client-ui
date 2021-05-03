@@ -5,37 +5,43 @@ import { useHistory, Link } from "react-router-dom";
 import ReactLoading from "react-loading";
 
 import * as actionCreators from "../../store/actionCreators/Surveys/index";
-import PublishedSurveys from "../../Components/Surveys/PublishedSurveys";
-import AlertDismissible from "../../Components/Alert/AlertDismissible";
+import OpenSurveys from "../../Components/Surveys/OpenSurveys";
+
+import * as exprt from "../../shared/export";
 
 function SurveyBuilder() {
+  // ================================= init ==============================
   const history = useHistory();
 
   // dispatch hook to call actions from redux reducer
   const dispatch = useDispatch();
 
   // retrieving data from redux store
-  const openedSurveys = useSelector(
-    (state) => state.surveyBuilder.openedSurveys
+  const openSurveys = useSelector(
+    (state) => state.surveyBuilder[`${exprt.props.STATE_OPEN_SURVEYS}`]
   );
-  const err = useSelector((state) => state.surveyBuilder.err);
-  const errMsg = useSelector((state) => state.surveyBuilder.errMsg);
 
   // component state
   const [request, setRequest] = useState({
     showBanner: true,
-    showSiteMsg: false,
   });
 
   const loading = useRef(true);
 
+  // ================================= functions ==============================
+
+  const initOpenSurveys = () => {
+    setTimeout(() => {
+      // dispatch re-render request, but state is not updated
+      dispatch(actionCreators.initOpenSurveys());
+    }, 500);
+  };
+
+  // ================================= hooks ==============================
   useEffect(() => {
-    if (loading.current || !openedSurveys) {
+    if (loading.current) {
       loading.current = false;
-      setTimeout(() => {
-        // dispatch re-render request, but state is not updated
-        dispatch(actionCreators.initPublishedSurveys());
-      }, 500);
+      initOpenSurveys();
     }
   });
 
@@ -48,16 +54,7 @@ function SurveyBuilder() {
         -> re-render at the end + state is updated (useState will be called again)
   */
 
-  const siteMsgComp = err ? (
-    <AlertDismissible
-      // component will be re-render cuz state is upddated when user click close
-      onClose={() => setRequest({ ...request, showSiteMsg: false })}
-      type="danger"
-      heading="Oh snap! You got an error!"
-      msg={errMsg}
-    ></AlertDismissible>
-  ) : null;
-
+  // ================================= sub-components =========================
   const banner = request.showBanner ? (
     <Jumbotron className="mb-4 pb-1 pt-4">
       <Row>
@@ -114,20 +111,21 @@ function SurveyBuilder() {
     </Breadcrumb>
   );
 
-  return (
+  const returnRender = (
     <>
       <div className="m-4">
-        {siteMsgComp}
         {banner}
         {titleBar}
-        {!loading.current && openedSurveys ? (
-          <PublishedSurveys surveys={openedSurveys} />
+        {!loading.current && openSurveys[`${exprt.props.IS_FETCHED}`] ? (
+          <OpenSurveys surveys={openSurveys[`${exprt.props.SURVEY_LIST}`]} />
         ) : (
           <ReactLoading type={"bars"} color={"black"} />
         )}
       </div>
     </>
   );
+
+  return returnRender;
 }
 
 export default SurveyBuilder;

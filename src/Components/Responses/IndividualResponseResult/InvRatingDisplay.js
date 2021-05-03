@@ -2,6 +2,7 @@ import React from "react";
 import { InputGroup } from "react-bootstrap";
 
 import * as funcs from "../../../shared/utility";
+import * as exprt from "../../../shared/export";
 
 function InvRatingDisplay(props) {
   const { question = {}, answer = {} } = props;
@@ -9,16 +10,22 @@ function InvRatingDisplay(props) {
   const isValidAnswer =
     !funcs.isEmpty(question) &&
     !funcs.isEmpty(answer) &&
-    question.questionType === answer.answerType &&
-    answer.answerType === "RATING" &&
-    answer.rating > 0 &&
-    answer.rating <= question.ratingScale &&
-    answer.rating <= 10;
+    question[`${exprt.props.QUESTION_TYPE}`] ===
+      answer[`${exprt.props.ANSWER_TYPE}`] &&
+    answer[`${exprt.props.ANSWER_TYPE}`] === exprt.props.RT_TYPE &&
+    answer[`${exprt.props.ANSWER_RT_ANSWERS}`] > 0 &&
+    answer[`${exprt.props.ANSWER_RT_ANSWERS}`] <=
+      question[`${exprt.props.RT_SCALE}`] &&
+    answer[`${exprt.props.ANSWER_RT_ANSWERS}`] <= 10;
 
   const MainDisplay = ({ question = {}, answer = {} }) => {
     let ratingDisplayItems = [];
-    const ratingScale = question.ratingScale ? question.ratingScale : 0;
-    const rating = answer.rating ? answer.rating : 1;
+    const ratingScale = question[`${exprt.props.RT_SCALE}`]
+      ? question[`${exprt.props.RT_SCALE}`]
+      : 0;
+    const rating = answer[`${exprt.props.ANSWER_RT_ANSWERS}`]
+      ? answer[`${exprt.props.ANSWER_RT_ANSWERS}`]
+      : 1;
 
     for (let i = 0; i < (ratingScale > 10 ? 10 : ratingScale); i++) {
       ratingDisplayItems = [
@@ -28,10 +35,11 @@ function InvRatingDisplay(props) {
             <input
               type="radio"
               aria-label="Radio button for following text input"
-              name="ratingScale"
+              name={`ratingScale ${answer.id}`}
               value={i + 1}
-              defaultChecked={i + 1 === rating}
+              checked={i + 1 === rating ? true : false}
               onClick={(event) => event.preventDefault()}
+              readOnly
             />
           </div>
         </div>,

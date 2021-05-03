@@ -3,27 +3,22 @@ import { FormControl, InputGroup } from "react-bootstrap";
 
 import * as funcs from "../../../shared/utility";
 
+import * as exprt from "../../../shared/export";
+
 function InvRankingDisplay(props) {
   const { question = {}, answer = {} } = props;
 
   const isValidAnswer =
     !funcs.isEmpty(question) &&
     !funcs.isEmpty(answer) &&
-    question.questionType === answer.answerType &&
-    answer.answerType === "RANKING" &&
-    question.rankingChoices.length ===
-      Object.keys(answer.selectionRanks).length;
-
-  // if (answer.id === 82) {
-  //   console.log(!funcs.isEmpty(question) && !funcs.isEmpty(answer));
-  //   console.log(
-  //     question.questionType === answer.answerType &&
-  //       answer.answerType === "RANKINg"
-  //   );
-  // }
+    question[`${exprt.props.QUESTION_TYPE}`] ===
+      answer[`${exprt.props.ANSWER_TYPE}`] &&
+    answer[`${exprt.props.ANSWER_TYPE}`] === exprt.props.RK_TYPE &&
+    question[`${exprt.props.RK_ANSWERS}`].length ===
+      Object.keys(answer[`${exprt.props.ANSWER_RK_ANSWERS}`]).length;
 
   const MainDisplay = ({ _, answer = {} }) => {
-    const selectionRanks = answer.selectionRanks;
+    const selectionRanks = answer[`${exprt.props.ANSWER_RK_ANSWERS}`];
     const ranks = Object.keys(selectionRanks);
 
     return (
@@ -38,7 +33,9 @@ function InvRankingDisplay(props) {
 
             <FormControl
               key={index}
-              defaultValue={selectionRanks[rank]}
+              defaultValue={
+                question[`${exprt.props.RK_ANSWERS}`][selectionRanks[rank]]
+              }
               readOnly
             />
           </InputGroup>

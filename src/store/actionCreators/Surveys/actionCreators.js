@@ -4,6 +4,7 @@
 /* eslint-disable quote-props */
 import axios from "../../../axios-surveyservice";
 import * as actions from "./actions";
+import * as exprt from "../../../shared/export";
 
 /* Description
    
@@ -30,44 +31,51 @@ import * as actions from "./actions";
 
 // =============== survey redux action creators ===============
 
-export const initPublishedSurveys = () => {
+export const initOpenSurveys = () => {
   return (dispatch) => {
+    // dispatch(actions.getOpenSurvyes(exprt.db.sampleDb.SAMPLE_SURVEY_LIST));
     axios
-      .get("/surveys/opened")
+      .get("/surveys/open")
       .then((response) => {
-        dispatch(actions.getOpenedSurvyes(response.data ? response.data : []));
+        dispatch(actions.getOpenSurvyes(response.data));
       })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        );
       });
   };
 };
 
-// need authorization
-export const initSurveys = () => {
+export const initUserSurveys = () => {
   return (dispatch) => {
+    // dispatch(actions.getUserSurveys(exprt.db.sampleDb.SAMPLE_SURVEY_LIST));
     axios
       .get("/surveys")
       .then((response) => {
-        dispatch(actions.getSurveys(response.data));
+        dispatch(actions.getUserSurveys(response.data));
       })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        );
       });
   };
 };
 
 export const initFullSurvey = (surveyId) => {
-  return async (dispatch) => {
-    const fullSurvey = await axios
+  return (dispatch) => {
+    // dispatch(actions.getFullSurvey(exprt.db.sampleDb.SAMPLE_FULL_SURVEY));
+    axios
       .get("/surveys/" + surveyId)
+      .then((response) => {
+        dispatch(actions.getFullSurvey(response.data));
+      })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        );
       });
-
-    if (fullSurvey) {
-      dispatch(actions.getFullSurvey(fullSurvey.data));
-    }
   };
 };
 
@@ -76,7 +84,7 @@ export const addSurvey = (newSurvey) => {
     let newSurveyID = await axios
       .post(`/surveys`, { ...newSurvey })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(actions.dispatchError(error));
       });
 
     if (newSurveyID) {
@@ -99,7 +107,7 @@ export const addSurvey = (newSurvey) => {
         addSectionSucess = false;
         axios.delete(`/surveys/${newSurveyID}`).then(() =>
           dispatch(
-            actions.fetchSurveysFailed({
+            actions.dispatchError({
               message: "Uncessfully created survey.",
             })
           )
@@ -107,68 +115,163 @@ export const addSurvey = (newSurvey) => {
       });
 
       if (addSectionSucess) {
-        dispatch(actions.addSurvey());
+        const createdSurvey = {
+          [`${exprt.props.SURVEY_ID}`]: newSurveyID,
+          ...exprt.db.initDb.FULL_SURVEY_INIT,
+          ...newSurvey,
+        };
+        dispatch(actions.addSurvey(createdSurvey));
         return newSurveyID;
       }
     }
   };
 };
 
-export const updateSurvey = (surveyId, fields) => {
+export const updateSurvey = (survey, fields) => {
   return (dispatch) => {
-    return axios
-      .patch(`/surveys/${surveyId}`, { ...fields })
-      .then((id) => {
-        dispatch(actions.updateSurvey(surveyId, fields));
-        return id.data;
+    // dispatch(actions.updateSurvey(updatedSurvey));
+    axios
+      .patch(`/surveys/${survey[`${exprt.props.SURVEY_ID}`]}`, { ...fields })
+      .then(() => {
+        const updatedSurvey = {
+          ...survey,
+          ...fields,
+        };
+        dispatch(actions.updateSurvey(updatedSurvey));
       })
       .catch((error) => {
-        dispatch(actions.fetchSurveysFailed(error));
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        );
+      });
+  };
+};
+
+export const publishSurvey = (survey, fields) => {
+  return async (dispatch) => {
+    // dispatch(actions.publishSurvey());
+    axios
+      .patch(`/surveys/${survey[`${exprt.props.SURVEY_ID}`]}`, { ...fields })
+      .then(() => {
+        dispatch(actions.publishSurvey());
+      })
+      .catch((error) => {
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        );
+      });
+  };
+};
+
+export const closeSurvey = (survey, fields) => {
+  return async (dispatch) => {
+    // dispatch(actions.closeSurvey());
+    axios
+      .patch(`/surveys/${survey[`${exprt.props.SURVEY_ID}`]}`, { ...fields })
+      .then(() => {
+        dispatch(actions.closeSurvey());
+      })
+      .catch((error) => {
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        );
       });
   };
 };
 
 export const deleteSurvey = (surveyId) => {
-  return (dispatch) => {
-    return axios
+  return async (dispatch) => {
+    // dispatch(actions.deleteSurvey());
+    axios
       .delete(`/surveys/${surveyId}`)
       .then(() => {
         dispatch(actions.deleteSurvey());
       })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
 // =============== survey > section ===============
 
-export const addSection = (surveyId, newSection) => {
+export const setActiveSection = (section) => {
   return (dispatch) => {
-    return axios
-      .post(`/surveys/${surveyId}/sections`, { ...newSection })
-      .then(async (id) => {
-        return axios
-          .get(`/surveys/${surveyId}/sections/${id.data}`)
-          .then(async (section) => {
-            dispatch(actions.addSection(section.data));
-            return section.data;
-          })
-          .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
-      })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+    dispatch(actions.setActiveSection(section));
   };
 };
 
-export const updateSection = (surveyId, sectionId, fields) => {
+export const addSection = (surveyId, newSection) => {
   return (dispatch) => {
+    // const returnID = Math.floor(Math.random() * 100);
+
+    // const createdSection = {
+    //   ...exprt.db.initDb.SECTION_INIT,
+    //   [`${exprt.props.SECTION_ID}`]: returnID,
+    //   ...newSection,
+    // };
+
+    // dispatch(actions.addSection(createdSection));
+
     return axios
-      .patch(`/surveys/${surveyId}/sections/${sectionId}`, { ...fields })
-      .then(() => dispatch(actions.updateSection(sectionId, fields)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .post(`/surveys/${surveyId}/sections`, { ...newSection })
+      .then(async (res) => {
+        const createdSection = {
+          ...exprt.db.initDb.SECTION_INIT,
+          [`${exprt.props.SECTION_ID}`]: res.data,
+          ...newSection,
+        };
+
+        dispatch(actions.addSection(createdSection));
+      })
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+export const updateSection = (surveyId, section, fields) => {
+  return (dispatch) => {
+    // const updatedSection = {
+    //   ...section,
+    //   ...fields,
+    // };
+
+    // dispatch(actions.updateSection(updatedSection));
+
+    return axios
+      .patch(
+        `/surveys/${surveyId}/sections/${section[`${exprt.props.SECTION_ID}`]}`,
+        { ...fields }
+      )
+      .then((res) => {
+        const updatedSection = {
+          ...section,
+          [`${exprt.props.SECTION_ID}`]: res.data,
+          ...fields,
+        };
+        dispatch(actions.updateSection(updatedSection));
+      })
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
 export const updateSectionIndex = (surveyId, sectionId, oldIndex, newIndex) => {
   return (dispatch) => {
+    // console.log("update Index");
+    // console.log(oldIndex);
+    // console.log(newIndex);
+
+    // dispatch(actions.updateSectionIndex(surveyId, oldIndex, newIndex));
+
     axios
       .put(`/surveys/${surveyId}/sections/${sectionId}/index`, {
         index: newIndex,
@@ -176,29 +279,45 @@ export const updateSectionIndex = (surveyId, sectionId, oldIndex, newIndex) => {
       .then(() =>
         dispatch(actions.updateSectionIndex(surveyId, oldIndex, newIndex))
       )
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) => dispatch(actions.dispatchError(error)));
   };
 };
 
 export const deleteSection = (surveyId, sectionId) => {
   return (dispatch) => {
-    return axios
+    // dispatch(actions.deleteSection(sectionId));
+    axios
       .delete(`/surveys/${surveyId}/sections/${sectionId}`)
       .then(() => dispatch(actions.deleteSection(sectionId)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
 // =============== survey > section > question ===============
 
-export const addQuestion = (surveyId, sectionId, newQuestion, files) => {
+export const setActiveQuestion = (question) => {
+  return (dispatch) => {
+    dispatch(actions.setActiveQuestion(question));
+  };
+};
+
+export const addQuestion = (surveyId, section, newQuestion, files) => {
   return async (dispatch) => {
+    // const id = Math.floor(Math.random() * 100);
+    // dispatch(actions.addQuestion(section, updatedQuestion));
+
     const formData = new FormData();
     formData.append("question", JSON.stringify(newQuestion));
 
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
+
+    const sectionId = section[`${exprt.props.SECTION_ID}`];
 
     let newQuestionId = await axios({
       url: `surveys/${surveyId}/sections/${sectionId}/questions`,
@@ -208,20 +327,29 @@ export const addQuestion = (surveyId, sectionId, newQuestion, files) => {
         "Content-Type": "multipart/form-data;",
       },
     }).catch((error) => {
-      dispatch(actions.fetchSurveysFailed(error));
+      dispatch(
+        actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+      );
     });
 
     if (newQuestionId) {
       newQuestionId = newQuestionId.data;
-      return axios
+      axios
         .get(
           `surveys/${surveyId}/sections/${sectionId}/questions/${newQuestionId}`
         )
         .then((newQuestion) => {
-          dispatch(actions.addQuestion(surveyId, sectionId, newQuestion.data));
-          return newQuestion.data;
+          const updatedQuestion = {
+            ...exprt.db.initDb.QUESTION_INIT,
+            ...newQuestion.data,
+          };
+          dispatch(actions.addQuestion(section, updatedQuestion));
         })
-        .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+        .catch((error) =>
+          dispatch(
+            actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+          )
+        );
     }
   };
 };
@@ -230,18 +358,26 @@ export const updateQuestion = (
   surveyId,
   sectionId,
   questionId,
-  question,
+  updatedFields,
   files
 ) => {
   return (dispatch) => {
+    // const updatedQuestion = {
+    //   ...exprt.db.initDb.QUESTION_INIT,
+    //   [`${exprt.props.QUESTION_ID}`]: questionId,
+    //   ...updatedFields,
+    // };
+
+    // dispatch(actions.updateQuestion(sectionId, updatedQuestion));
+
     const formData = new FormData();
-    formData.append("question", JSON.stringify(question));
+    formData.append("question", JSON.stringify(updatedFields));
 
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
 
-    return axios({
+    axios({
       url: `/surveys/${surveyId}/sections/${sectionId}/questions/${questionId}`,
       method: "put",
       data: formData,
@@ -250,18 +386,28 @@ export const updateQuestion = (
       },
     })
       .then((response) => {
-        return axios
+        axios
           .get(
             `/surveys/${surveyId}/sections/${sectionId}/questions/${response.data}`
           )
-          .then((updatedQuestion) => {
-            dispatch(actions.updateQuestion(sectionId, updatedQuestion.data));
-
-            return updatedQuestion.data;
+          .then((res) => {
+            const updatedQuestion = {
+              ...exprt.db.initDb.QUESTION_INIT,
+              ...res.data,
+            };
+            dispatch(actions.updateQuestion(sectionId, updatedQuestion));
           })
-          .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+          .catch((error) =>
+            dispatch(
+              actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+            )
+          );
       })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
@@ -272,7 +418,8 @@ export const updateQuestionIndex = (
   oldIndex,
   newIndex
 ) => {
-  return (dispatch) => {
+  return async (dispatch) => {
+    // return dispatch(actions.updateQuestionIndex(sectionId, oldIndex, newIndex));
     axios
       .put(
         `/surveys/${surveyId}/sections/${sectionId}/questions/${questionId}/index`,
@@ -281,18 +428,28 @@ export const updateQuestionIndex = (
       .then(() =>
         dispatch(actions.updateQuestionIndex(sectionId, oldIndex, newIndex))
       )
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
 export const deleteQuestion = (surveyId, sectionId, questionId) => {
   return (dispatch) => {
-    return axios
+    // dispatch(actions.deleteQuestion(questionId));
+
+    axios
       .delete(
         `/surveys/${surveyId}/sections/${sectionId}/questions/${questionId}`
       )
-      .then(() => dispatch(actions.deleteQuestion(sectionId, questionId)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .then(() => dispatch(actions.deleteQuestion(questionId)))
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
@@ -300,45 +457,189 @@ export const deleteQuestion = (surveyId, sectionId, questionId) => {
 
 export const getResponses = (surveyId) => {
   return (dispatch) => {
+    // dispatch(actions.getResponses(exprt.db.sampleDb.SAMPLE_RESPONSE_LIST));
     axios
       .get(`surveys/${surveyId}/responses`)
       .then((responses) => dispatch(actions.getResponses(responses.data)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
 export const getResponse = (surveyId, responseId) => {
   return (dispatch) => {
+    // dispatch(actions.getResponse(exprt.db.sampleDb.SAMPLE_FULL_RESPONSE));
+
     return axios
       .get(`surveys/${surveyId}/responses/${responseId}`)
       .then((response) => {
         dispatch(actions.getResponse(response.data));
         return response.data;
       })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
 export const addResponse = (surveyId, response) => {
-  return async (dispatch) => {
-    const newResponse = await axios
+  return (dispatch) => {
+    return axios
       .post(`surveys/${surveyId}/responses`, { ...response })
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
-
-    if (newResponse) {
-      dispatch(actions.addResponse(surveyId));
-    }
-
-    return newResponse.data;
+      .then(() => {
+        return true;
+      })
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
 export const removeResponse = (surveyId, responseId) => {
-  return (dispatch) => {
-    return axios
+  return async (dispatch) => {
+    axios
       .delete(`surveys/${surveyId}/responses/${responseId}`)
-      .then(() => dispatch(actions.removeResponse(surveyId, responseId)))
-      .catch((error) => dispatch(actions.fetchSurveysFailed(error)));
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+// =============== response Groups ==================
+
+export const initResponseGroups = (surveyId) => {
+  return (dispatch) => {
+    axios
+      .get(`responseGroups/surveys/${surveyId}`)
+      .then((resGroup) => dispatch(actions.initResponseGroups(resGroup.data)))
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+export const addResponseGroup = (resGroup) => {
+  return (dispatch) => {
+    axios
+      .post(`responseGroups`, { ...resGroup })
+      .then(() => {
+        return true;
+      })
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+export const addResponseGroupAutoYear = (surveyId, resGroup) => {
+  return (dispatch) => {
+    axios
+      .post(`responseGroups/survey/${surveyId}/years`, { ...resGroup })
+      .then(() => {
+        return true;
+      })
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+export const deleteResponseGroup = (resGroupId) => {
+  return async (dispatch) => {
+    axios
+      .delete(`responseGroups/${resGroupId}`)
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+// =============== question Summaries ===============
+
+export const initQuestionSummaries = (surveyId) => {
+  return (dispatch) => {
+    // dispatch(
+    //   actions.initQuestionSummaries(exprt.db.sampleDb.SAMPLE_QUESTION_SUMMARY)
+    // );
+    axios
+      .get(`surveys/${surveyId}/questionResultSummaries`)
+      .then((qrs) => dispatch(actions.initQuestionSummaries(qrs.data)))
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+// =============== charts ===============
+
+export const initQuestionAdvanceCharts = (questionId) => {
+  return (dispatch) => {
+    // dispatch(
+    //   actions.initQuestionAdvanceCharts(
+    //     exprt.db.sampleDb.SAMPLE_QUESTION_ADVANCE_CHARTS
+    //   )
+    // );
+    axios
+      .get(`questions/${questionId}/resGroups/charts`)
+      .then((charts) =>
+        dispatch(actions.initQuestionAdvanceCharts(charts.data))
+      )
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+export const addChart = (questionId, chartInfo) => {
+  return async (dispatch) => {
+    return axios
+      .post(`questions/${questionId}/resGroups/charts`, { ...chartInfo })
+      .then((chartInfo) => {
+        return chartInfo.data;
+      })
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
+  };
+};
+
+export const updateChart = (questionId, chartId, chartInfo) => {
+  return async (dispatch) => {
+    return axios
+      .put(`questions/${questionId}/resGroups/charts/${chartId}`, {
+        ...chartInfo,
+      })
+      .then((chartInfo) => {
+        return chartInfo.data;
+      })
+      .catch((error) =>
+        dispatch(
+          actions.dispatchError(error.message, exprt.props.FETCHING_ERROR)
+        )
+      );
   };
 };
 
@@ -346,5 +647,11 @@ export const removeResponse = (surveyId, responseId) => {
 export const updateAttachmentObjects = (imgObject) => {
   return (dispatch) => {
     dispatch(actions.updateAttachmentObjects(imgObject));
+  };
+};
+
+export const initError = (message, type) => {
+  return (dispatch) => {
+    dispatch(actions.dispatchError(message, type));
   };
 };

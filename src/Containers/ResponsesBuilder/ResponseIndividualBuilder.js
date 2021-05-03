@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import ReactLoading from "react-loading";
@@ -10,116 +10,64 @@ import { Card, Form } from "react-bootstrap";
 import CustomBreadcrumb from "../../Components/CustomBreadcrumb/CustomBreadcrumb";
 import IconButton from "../../Components/CustomButton/IconButton";
 
+import * as exprt from "../../shared/export";
+
 function ResponseIndividualBuilder(props) {
-  const { survey = {} } = props;
-  const { sId, resId } = useParams();
-  const surveyId = Number(sId);
-  const responseId = Number(resId);
+  const { survey = exprt.db.initDb.FULL_SURVEY_INIT } = props;
+  const { resId } = useParams();
 
-  const history = useHistory();
   const dispatch = useDispatch();
-  const response = useSelector((state) => state.surveyBuilder.response);
 
-  const ReponseOption = () => {
-    const questionSummary = {
-      type: "Summary Result",
-      title: "Question summary",
-      onClick: () =>
-        history.push(
-          `/dashboard/mysurveys/survey/${survey.id}/responses/questionSummary`
-        ),
-    };
+  const response = useSelector(
+    (state) => state.surveyBuilder[`${exprt.props.STATE_FULL_RESPONSE}`]
+  );
 
-    const allowedOptions = [{ ...questionSummary }];
+  const loading = useRef(true);
+  let isRender = false;
 
-    return (
-      <>
-        {allowedOptions.map((op, i) => (
-          <IconButton
-            type={op.type}
-            title={op.title}
-            onClickHandler={op.onClick}
-            key={i}
-            index={i}
-            btnClassName="m-0 p-2"
-            disabled={op.disabled ? true : false}
-          />
-        ))}
-      </>
+  // ================================= functions =========================
+
+  const initResponse = (surveyId, responseId) => {
+    setTimeout(
+      () => dispatch(actionCreators.getResponse(surveyId, responseId)),
+      500
     );
   };
 
-  let breadcumbItems = [
-    {
-      title: "My Surveys",
-      onClick: () => history.push(`/dashboard/mysurveys`),
-    },
-
-    {
-      title: survey && survey.name ? survey.name : "[Unknown Survey Name]",
-      onClick: () =>
-        history.push(`/dashboard/mysurveys/survey?sId=${survey && survey.id}`),
-    },
-    {
-      title: "responses",
-      onClick: () =>
-        history.push(
-          `/dashboard/mysurveys/survey/${survey && survey.id}/responses`
-        ),
-    },
-  ];
-
-  const Breadcrumb = ({ breadcumbItems = [] }) => (
-    <>
-      {breadcumbItems.length > 0 && (
-        <Form.Group controlId="titleNavBar">
-          <Card.Header className="p-0">
-            <CustomBreadcrumb items={breadcumbItems} iconClassname="ml-1" />
-            <div className="float-right">
-              <ReponseOption />
-            </div>
-          </Card.Header>
-        </Form.Group>
-      )}
-    </>
-  );
+  // ================================= hooks =========================
 
   useEffect(() => {
-    if (surveyId && funcs.isEmpty(survey)) {
-      dispatch(actionCreators.initFullSurvey(sId));
-    }
-
-    if (
-      responseId &&
-      (funcs.isEmpty(response) || Number(responseId) !== Number(response.id))
-    ) {
-      dispatch(actionCreators.getResponse(surveyId, responseId));
+    if (loading.current) {
+      initResponse(survey[`${exprt.props.SURVEY_ID}`], resId);
+      loading.current = false;
     }
   });
 
-  if (
-    responseId &&
-    !funcs.isEmpty(response) &&
-    Number(responseId) === Number(response.id) &&
-    breadcumbItems.length !== 4
-  ) {
-    const title = `${funcs.toSentenceCase(
-      response.type
-    )} <span class="text-dark"> (${response.date})</span>`;
+  // ================================= logic flow =========================
 
-    breadcumbItems = [...breadcumbItems, { title: title }];
+  if (
+    survey[`${exprt.props.SURVEY_ID}`] > -1 &&
+    response[`${exprt.props.RESPONSE_SURVEY_ID}`] ===
+      survey[`${exprt.props.SURVEY_ID}`] &&
+    response[`${exprt.props.RESPONSE_ID}`] > -1 &&
+    Number(resId) === Number(response[`${exprt.props.RESPONSE_ID}`])
+  ) {
+    isRender = true;
   }
 
-  return (
+  // ================================= sub-components =========================
+
+  const returnRender = (
     <>
-      <Breadcrumb breadcumbItems={breadcumbItems} />
-      {!funcs.isEmpty(response) && !funcs.isEmpty(survey) ? (
+      {isRender ? (
         <IndividualResponse survey={survey} response={response} />
       ) : (
         <ReactLoading type={"bars"} color={"black"} />
       )}{" "}
     </>
   );
+
+  return returnRender;
 }
 
 export default ResponseIndividualBuilder;

@@ -1,89 +1,64 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 import ReactLoading from "react-loading";
 
 import Dashboard from "../../Components/Dashboard/Dashboard";
-import AlertDismissible from "../../Components/Alert/AlertDismissible";
 
 import * as actionCreators from "../../store/actionCreators/Surveys/index";
 import NotFoundPage from "../../NotFoundPage";
 
-function DashboardBuilder() {
-  const dispatch = useDispatch();
+import * as exprt from "../../shared/export";
 
-  // data from redux store
-  const surveys = useSelector((state) => state.surveyBuilder.surveys);
-  const err = useSelector((state) => state.surveyBuilder.err);
-  const errMsg = useSelector((state) => state.surveyBuilder.errMsg);
+function DashboardBuilder() {
+  // ================================= init =========================
+  const dispatch = useDispatch();
+  const surveys = useSelector(
+    (state) => state.surveyBuilder[`${exprt.props.STATE_USER_SURVEYS}`]
+  );
 
   const loading = useRef(true);
 
+  // ================================= functions =========================
+  const initUserSurveys = () => {
+    setTimeout(() => {
+      dispatch(actionCreators.initUserSurveys());
+    }, 500);
+  };
+
+  // ================================= hooks =========================
   useEffect(() => {
-    if (loading.current || !surveys) {
-      setTimeout(() => {
-        dispatch(actionCreators.initSurveys());
-      }, 500);
+    if (loading.current) {
       loading.current = false;
+      initUserSurveys();
     }
   });
 
-  const [request, setRequest] = useState({
-    showSiteMsg: false,
+  // ================================= sub-components =========================
 
-    siteMsg: {
-      type: "info",
-      heading: "",
-      msg: "This is an alert message!",
-    },
-  });
+  const routes = (
+    <Switch>
+      <Route path="/dashboard" exact>
+        <Dashboard surveys={surveys[`${exprt.props.SURVEY_LIST}`]}></Dashboard>
+      </Route>
+      <Route path="*" component={NotFoundPage} />
+    </Switch>
+  );
 
-  if (
-    err &&
-    request.siteMsg.type !== "danger" &&
-    errMsg !== request.siteMsg.msg
-  ) {
-    // re-render request and update state
-    setRequest({
-      ...request,
-      showSiteMsg: true,
-      siteMsg: {
-        type: "danger",
-        heading: "Oh snap! You got an error!",
-        msg: errMsg,
-      },
-    });
-  }
-
-  const siteMsgComp = request.showSiteMsg ? (
-    <AlertDismissible
-      // component will be re-render cuz state is upddated when user click close
-      onClose={() => setRequest({ ...request, showSiteMsg: false })}
-      type={request.siteMsg.type}
-      heading={request.siteMsg.heading}
-      msg={request.siteMsg.msg}
-    >
-      {" "}
-    </AlertDismissible>
-  ) : null;
-
-  return (
+  const returnRender = (
     <>
       <div className="m-5">
-        {siteMsgComp}
-        {!loading.current && surveys ? (
-          <Switch>
-            <Route path="/dashboard" exact>
-              <Dashboard surveys={surveys}></Dashboard>
-            </Route>
-            <Route path="*" component={NotFoundPage} />
-          </Switch>
+        {/* {routes} */}
+        {!loading.current && surveys[`${exprt.props.IS_FETCHED}`] ? (
+          routes
         ) : (
           <ReactLoading type={"bars"} color={"black"} />
         )}
       </div>
     </>
   );
+
+  return <> {returnRender} </>;
 }
 
 export default DashboardBuilder;

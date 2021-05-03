@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 
+import * as exprt from "../../../shared/export";
+
 function MultipleChoiceDisplay(props) {
   const { question } = props;
 
-  const type = question.maxSelections > 1 ? "checkbox" : "radio";
+  const type = question[`${exprt.props.MC_MAX_SEL}`] > 1 ? "checkbox" : "radio";
 
   const [request, setRequest] = useState({
     selectedChoices: [],
@@ -12,14 +14,16 @@ function MultipleChoiceDisplay(props) {
 
   const anwsers = (
     <>
-      {question.choices.map((choice, index) => {
+      {question[`${exprt.props.MC_ANSWERS}`].map((choice, index) => {
         return (
           <Form.Group key={index}>
             <Form.Check
               key={index}
               type={type}
-              id={`default-${type}-${question.id}-${index}`}
-              name={`multiple choice ${question.id}`}
+              id={`default-${type}-${
+                question[`${exprt.props.QUESTION_ID}`]
+              }-${index}`}
+              name={`multiple choice ${question[`${exprt.props.QUESTION_ID}`]}`}
               label={choice}
               onChange={() =>
                 type === "radio"
@@ -31,7 +35,8 @@ function MultipleChoiceDisplay(props) {
                         (e) => e !== index
                       ),
                     })
-                  : request.selectedChoices.length < question.maxSelections &&
+                  : request.selectedChoices.length <
+                      question[`${exprt.props.MC_MAX_SEL}`] &&
                     setRequest({
                       ...request,
                       selectedChoices: [...request.selectedChoices, index],
@@ -51,21 +56,27 @@ function MultipleChoiceDisplay(props) {
         );
       })}
       {type === "checkbox" &&
-        question.minSelections > 0 &&
-        question.minSelections <= question.choices.length && (
+        question[`${exprt.props.MC_MIN_SEL}`] > 0 &&
+        question[`${exprt.props.MC_MIN_SEL}`] <=
+          question[`${exprt.props.MC_ANSWERS}`].length && (
           <Form.Group className="mt-0 pt-0">
             <small className="text-danger">
-              <strong>Min Selections: {question.minSelections}</strong>
+              <strong>
+                Min Selections: {question[`${exprt.props.MC_MIN_SEL}`]}
+              </strong>
             </small>
           </Form.Group>
         )}
 
       {type === "checkbox" &&
-        question.maxSelections > 0 &&
-        question.maxSelections <= question.choices.length && (
+        question[`${exprt.props.MC_MAX_SEL}`] > 0 &&
+        question[`${exprt.props.MC_MAX_SEL}`] <=
+          question[`${exprt.props.MC_ANSWERS}`].length && (
           <Form.Group className="mb-2 mt-0 pt-0">
             <small className="text-danger">
-              <strong>Max Selections: {question.maxSelections}</strong>
+              <strong>
+                Max Selections: {question[`${exprt.props.MC_MAX_SEL}`]}
+              </strong>
             </small>
           </Form.Group>
         )}

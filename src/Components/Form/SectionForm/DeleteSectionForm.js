@@ -2,23 +2,42 @@ import React from "react";
 import { Form } from "react-bootstrap";
 import FormModal from "../../Modal/FormModal";
 
+import * as exprt from "../../../shared/export";
+
 function DeleteSectionForm(props) {
+  // ============================ init =======================
+
   const {
-    show,
-    onHide,
+    show = false,
+    onHide = () => {},
 
     heading = "Delete Section",
     headingColor = "text-danger",
     submitTitle = "Delete",
     submitTitleVariant = "danger",
 
-    section,
-    onDeleteSectionSubmit,
+    section = exprt.db.initDb.SECTION_INIT,
+    deleteSection = () => {},
   } = props;
 
+  let isRender = false;
+
+  // ============================ functions =======================
+
   const handlerOnSubmit = () => {
-    onDeleteSectionSubmit(section.id);
+    deleteSection();
+    onHide();
   };
+
+  // ============================ logic flow =======================
+  if (
+    section[`${exprt.props.SECTION_ID}`] > -1 &&
+    section[`${exprt.props.SECTION_INDEX}`] > -1
+  ) {
+    isRender = true;
+  }
+
+  // ============================ sub-components =======================
 
   const modal = (
     <FormModal
@@ -47,17 +66,19 @@ function DeleteSectionForm(props) {
           <Form.Check.Label>
             <strong>
               Please confirm that you would like to delete SECTION
-              {` ${section.sectionIndex + 1}`}
+              {` ${section[`${exprt.props.SECTION_INDEX}`] + 1}`}
             </strong>
           </Form.Check.Label>
           <Form.Control.Feedback type="invalid">
-            You have to check it to delete section {section.sectionIndex + 1}
+            You have to check it to delete section{" "}
+            {section[`${exprt.props.SECTION_INDEX}`] + 1}
           </Form.Control.Feedback>
         </Form.Check>
       </Form.Group>
     </FormModal>
   );
-  return <>{modal} </>;
+
+  return isRender && modal;
 }
 
 export default DeleteSectionForm;

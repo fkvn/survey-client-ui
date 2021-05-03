@@ -12,10 +12,24 @@ import thunk from "redux-thunk";
 
 import surveyReducer from "./store/reducers/surveys";
 
-const composeEnhancers =
-  (process.env.NODE_ENV === "development"
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    : null) || compose;
+let composeEnhancers = "";
+
+try {
+  composeEnhancers =
+    (process.env.NODE_ENV === "development"
+      ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+          trace: true,
+          traceLimit: 25,
+        })
+      : null) || compose;
+} catch (error) {
+  // when browser doesn't support trace feature for redux
+  // or browser hasn't installed redux extension yet
+  composeEnhancers =
+    (process.env.NODE_ENV === "development"
+      ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+      : null) || compose;
+}
 
 const rootReducer = combineReducers({
   surveyBuilder: surveyReducer,
