@@ -296,7 +296,7 @@ function ResponseGroup(props) {
     return (
       <>
         <Accordion defaultActiveKey="non-groupResponses" ref={nonGroupRef}>
-          <Card style={{ maxHeight: "500px", overflow: "scroll" }}>
+          <Card style={{ maxHeight: "400px", overflow: "scroll" }}>
             <Card.Body>
               <Accordion.Toggle as={Card.Title} eventKey="non-groupResponses">
                 <strong>Responses</strong>
@@ -799,7 +799,7 @@ function ResponseGroup(props) {
 
                 <div className="d-inline-block float-right mb-0 pb-0">
                   <span>
-                    <DeleteResponseGroupBuilder
+                    {/* <DeleteResponseGroupBuilder
                       resGroup={resGroup}
                       survey={survey}
                     >
@@ -814,7 +814,7 @@ function ResponseGroup(props) {
                           color="text-danger"
                         />
                       </Button>
-                    </DeleteResponseGroupBuilder>
+                    </DeleteResponseGroupBuilder> */}
 
                     <IconButton
                       btnClassName="p-0 m-0 mb-0"
@@ -995,10 +995,11 @@ function ResponseGroup(props) {
       <>
         <Accordion
           defaultActiveKey="group-responses"
-          className="my-4"
+          className="mb-4"
           ref={resGroupRef}
         >
-          <Card style={{ maxHeight: "1000px", overflow: "scroll" }}>
+          {/* <Card style={{ maxHeight: "1000px", overflow: "scroll" }}> */}
+          <Card>
             <Card.Body>
               <Accordion.Toggle as={Card.Title} eventKey="group-responses">
                 <strong className="text-info">Response Groups</strong>
@@ -1042,7 +1043,7 @@ function ResponseGroup(props) {
         New Group
       </Button>
       <ListGroup variant="flush">
-        <ListGroup.Item
+        {/* <ListGroup.Item
           action
           as={Button}
           onClick={() => {
@@ -1062,7 +1063,7 @@ function ResponseGroup(props) {
           className="text-info"
         >
           Non-group Responses
-        </ListGroup.Item>
+        </ListGroup.Item> */}
         <ListGroup.Item
           action
           as={Button}
@@ -1078,7 +1079,7 @@ function ResponseGroup(props) {
              box-shadow: 0 0 0 0.3rem rgba(40, 167, 69, 0.25);
             `
             );
-            nonGroupRef.current.setAttribute("style", "");
+            // nonGroupRef.current.setAttribute("style", "");
           }}
           className="text-info"
         >
@@ -1114,7 +1115,7 @@ function ResponseGroup(props) {
             {topBar}
           </Col>
           <Col xs={12} lg={10}>
-            <NonGroupResponse survey={survey} responses={responses} />
+            {/* <NonGroupResponse survey={survey} responses={responses} /> */}
             <ResponseGroups
               survey={survey}
               responses={responses}

@@ -59,7 +59,7 @@ function AddQuestionForm(props) {
       const answersRef = multipleChoiceRef.current[`${exprt.props.MC_ANSWERS}`];
 
       const answerValues = answersRef.reduce(
-        (answers, ansRef) => [...answers, Number([ansRef.current.value])],
+        (answers, ansRef) => [...answers, ansRef.current.value],
         []
       );
 
@@ -73,6 +73,9 @@ function AddQuestionForm(props) {
       multipleChoiceProps[`${exprt.props.MC_MAX_SEL}`] =
         multipleChoiceRef.current[`${exprt.props.MC_MAX_SEL}`];
     } catch (error) {}
+
+    console.log("mul");
+    console.log(multipleChoiceProps);
 
     return multipleChoiceProps;
   };

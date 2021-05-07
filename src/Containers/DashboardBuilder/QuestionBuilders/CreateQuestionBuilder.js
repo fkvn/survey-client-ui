@@ -24,6 +24,7 @@ function CreateQuestionBuilder(props) {
   // ================================= functions =========================
 
   const addQuestion = (newQuestion, files) => {
+    // console.log(newQuestion);
     dispatch(actionCreators.addQuestion(surveyId, section, newQuestion, files));
   };
   // ================================= logic flow =========================
