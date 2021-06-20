@@ -1,5 +1,13 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+Contact information:
+
+email: kv@ckvngo.com
+
+profile: www.ckvngo.com
+
+Back-end (Rest API): https://github.com/fkvn/survey-service-restapi
+
 ## Available Scripts
 
 In the project directory, you can run:
