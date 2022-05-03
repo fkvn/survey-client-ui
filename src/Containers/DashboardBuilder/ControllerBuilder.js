@@ -75,7 +75,8 @@ function ControllerBuilder(props) {
   //   <Route path="*" component={NotFoundPage} />
   // </Switch>;
 
-  return <>{aliceObj ? routes : <OIDCHandler />}</>;
+  // return <>{aliceObj ? routes : <OIDCHandler />}</>;
+  return routes;
 }
 
 export default ControllerBuilder;

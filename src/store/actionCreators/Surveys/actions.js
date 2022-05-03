@@ -74,215 +74,215 @@ import { QUESTION_SUMMARIES } from "../../../shared/properties";
   } -> same variable name, but one is from action called, one is to send to redux reducer
 */
 export const getOpenSurvyes = (openSurveys) => {
-  return {
-    type: actionTypes.GET_OPEN_SURVEYS,
-    [`${exprt.props.SURVEY_LIST}`]: openSurveys,
-  };
+	return {
+		type: actionTypes.GET_OPEN_SURVEYS,
+		[`${exprt.props.SURVEY_LIST}`]: openSurveys,
+	};
 };
 
 export const getUserSurveys = (userSurveys) => {
-  return {
-    type: actionTypes.GET_USER_SURVEYS,
-    [`${exprt.props.SURVEY_LIST}`]: userSurveys,
-  };
+	return {
+		type: actionTypes.GET_USER_SURVEYS,
+		[`${exprt.props.SURVEY_LIST}`]: userSurveys,
+	};
 };
 
 export const getFullSurvey = (fullSurvey) => {
-  return {
-    type: actionTypes.GET_FULL_SURVEY,
-    [`${exprt.props.SURVEY}`]: fullSurvey,
-  };
+	return {
+		type: actionTypes.GET_FULL_SURVEY,
+		[`${exprt.props.SURVEY}`]: fullSurvey,
+	};
 };
 
 export const addSurvey = (createdSurvey) => {
-  return {
-    type: actionTypes.ADD_SURVEY,
-    [`${exprt.props.SURVEY}`]: createdSurvey,
-  };
+	return {
+		type: actionTypes.ADD_SURVEY,
+		[`${exprt.props.SURVEY}`]: createdSurvey,
+	};
 };
 
 export const updateSurvey = (updatedSurvey) => {
-  return {
-    type: actionTypes.UPDATE_SURVEY,
-    [`${exprt.props.SURVEY}`]: updatedSurvey,
-  };
+	return {
+		type: actionTypes.UPDATE_SURVEY,
+		[`${exprt.props.SURVEY}`]: updatedSurvey,
+	};
 };
 
 export const publishSurvey = () => {
-  return {
-    type: actionTypes.PUBLISH_SURVEY,
-  };
+	return {
+		type: actionTypes.PUBLISH_SURVEY,
+	};
 };
 
 export const closeSurvey = () => {
-  return {
-    type: actionTypes.CLOSE_SURVEY,
-  };
+	return {
+		type: actionTypes.CLOSE_SURVEY,
+	};
 };
 
 export const deleteSurvey = () => {
-  return {
-    type: actionTypes.DELETE_SURVEY,
-  };
+	return {
+		type: actionTypes.DELETE_SURVEY,
+	};
 };
 
 // =============== survey > section ===============
 
 export const setActiveSection = (section) => {
-  return {
-    type: actionTypes.SET_ACTIVE_SECTION,
-    [`${exprt.props.SECTION}`]: section,
-  };
+	return {
+		type: actionTypes.SET_ACTIVE_SECTION,
+		[`${exprt.props.SECTION}`]: section,
+	};
 };
 
 export const addSection = (createdSection) => {
-  return {
-    type: actionTypes.ADD_SECTION,
-    [`${exprt.props.SECTION}`]: createdSection,
-  };
+	return {
+		type: actionTypes.ADD_SECTION,
+		[`${exprt.props.SECTION}`]: createdSection,
+	};
 };
 
 export const updateSection = (updatedSection) => {
-  return {
-    type: actionTypes.UPDATE_SECTION,
-    [`${exprt.props.SECTION}`]: updatedSection,
-  };
+	return {
+		type: actionTypes.UPDATE_SECTION,
+		[`${exprt.props.SECTION}`]: updatedSection,
+	};
 };
 
 export const updateSectionIndex = (surveyId, oldIndex, newIndex) => {
-  return {
-    type: actionTypes.UPDATE_SECTION_INDEX,
-    surveyId: surveyId,
-    oldIndex: oldIndex,
-    newIndex: newIndex,
-  };
+	return {
+		type: actionTypes.UPDATE_SECTION_INDEX,
+		surveyId: surveyId,
+		oldIndex: oldIndex,
+		newIndex: newIndex,
+	};
 };
 
 export const deleteSection = (sectionId) => {
-  return {
-    type: actionTypes.DELETE_SECTION,
-    [`${exprt.props.SECTION_ID}`]: sectionId,
-  };
+	return {
+		type: actionTypes.DELETE_SECTION,
+		[`${exprt.props.SECTION_ID}`]: sectionId,
+	};
 };
 
 // =============== survey > section > question ===============
 
 export const setActiveQuestion = (question) => {
-  return {
-    type: actionTypes.SET_ACTIVE_QUESTION,
-    [`${exprt.props.QUESTION}`]: question,
-  };
+	return {
+		type: actionTypes.SET_ACTIVE_QUESTION,
+		[`${exprt.props.QUESTION}`]: question,
+	};
 };
 
 export const addQuestion = (section, newQuestion) => {
-  return {
-    type: actionTypes.ADD_QUESTION,
-    [`${exprt.props.SECTION}`]: section,
-    [`${exprt.props.QUESTION}`]: newQuestion,
-  };
+	return {
+		type: actionTypes.ADD_QUESTION,
+		[`${exprt.props.SECTION}`]: section,
+		[`${exprt.props.QUESTION}`]: newQuestion,
+	};
 };
 
 export const updateQuestion = (sectionId, updatedQuestion) => {
-  return {
-    type: actionTypes.UPDATE_QUESTION,
-    [`${exprt.props.SECTION_ID}`]: sectionId,
-    [`${exprt.props.QUESTION}`]: updatedQuestion,
-  };
+	return {
+		type: actionTypes.UPDATE_QUESTION,
+		[`${exprt.props.SECTION_ID}`]: sectionId,
+		[`${exprt.props.QUESTION}`]: updatedQuestion,
+	};
 };
 
 export const updateQuestionIndex = (sectionId, oldIndex, newIndex) => {
-  return {
-    type: actionTypes.UPDATE_QUESTION_INDEX,
-    [`${exprt.props.SECTION_ID}`]: sectionId,
-    oldIndex: oldIndex,
-    newIndex: newIndex,
-  };
+	return {
+		type: actionTypes.UPDATE_QUESTION_INDEX,
+		[`${exprt.props.SECTION_ID}`]: sectionId,
+		oldIndex: oldIndex,
+		newIndex: newIndex,
+	};
 };
 
 export const deleteQuestion = (questionId) => {
-  return {
-    type: actionTypes.DELETE_QUESTION,
-    [`${exprt.props.QUESTION_ID}`]: questionId,
-  };
+	return {
+		type: actionTypes.DELETE_QUESTION,
+		[`${exprt.props.QUESTION_ID}`]: questionId,
+	};
 };
 
 // =============== survey > response ===============
 
 export const getResponses = (responses) => {
-  return {
-    type: actionTypes.GET_RESPONSES,
-    [`${exprt.props.RESPONSE_LIST}`]: responses,
-  };
+	return {
+		type: actionTypes.GET_RESPONSES,
+		[`${exprt.props.RESPONSE_LIST}`]: responses,
+	};
 };
 
 export const getResponse = (response) => {
-  return {
-    type: actionTypes.GET_RESPONSE,
-    [`${exprt.props.RESPONSE}`]: response,
-  };
+	return {
+		type: actionTypes.GET_RESPONSE,
+		[`${exprt.props.RESPONSE}`]: response,
+	};
 };
 
 export const addResponse = (surveyId) => {
-  return {
-    type: actionTypes.ADD_RESPONSE,
-    surveyId: surveyId,
-  };
+	return {
+		type: actionTypes.ADD_RESPONSE,
+		surveyId: surveyId,
+	};
 };
 
 export const removeResponse = () => {
-  return {
-    type: actionTypes.REMOVE_REPSONSE,
-  };
+	return {
+		type: actionTypes.REMOVE_REPSONSE,
+	};
 };
 
 // =============== response groups ===============
 
 export const initResponseGroups = (resGroups) => {
-  return {
-    type: actionTypes.GET_RESPONSE_GROUPS,
-    [`${exprt.props.RESPONSE_GROUP_LIST}`]: resGroups,
-  };
+	return {
+		type: actionTypes.GET_RESPONSE_GROUPS,
+		[`${exprt.props.RESPONSE_GROUP_LIST}`]: resGroups,
+	};
 };
 
 // =============== question Summaries ===============
 
 export const initQuestionSummaries = (questionSummaries) => {
-  return {
-    type: actionTypes.GET_QUESTION_SUMMARIES,
-    [`${exprt.props.QUESTION_SUMMARIES}`]: questionSummaries,
-  };
+	return {
+		type: actionTypes.GET_QUESTION_SUMMARIES,
+		[`${exprt.props.QUESTION_SUMMARIES}`]: questionSummaries,
+	};
 };
 
 // =============== charts ===============
 
 export const initQuestionAdvanceCharts = (charts) => {
-  return {
-    type: actionTypes.GET_QUESTION_ADVANCE_CHARTS,
-    [`${exprt.props.CHART_LIST}`]: charts,
-  };
+	return {
+		type: actionTypes.GET_QUESTION_ADVANCE_CHARTS,
+		[`${exprt.props.CHART_LIST}`]: charts,
+	};
 };
 
 // =============== errors ===============
 
 export const dispatchError = (errMessage, errType) => {
-  let message = errMessage;
+	let message = errMessage;
 
-  if (errMessage === "Network Error") {
-    message = "Network Error. Server is not connecting!!!";
-  }
+	if (errMessage === "Network Error") {
+		message = "Network Error. Server is not connecting!!!";
+	}
 
-  return {
-    type: actionTypes.DISPATCH_ERROR,
-    [`${exprt.props.ERROR_MESSAGE}`]: message,
-    [`${exprt.props.ERROR_TYPE}`]: errType,
-  };
+	return {
+		type: actionTypes.DISPATCH_ERROR,
+		[`${exprt.props.ERROR_MESSAGE}`]: message,
+		[`${exprt.props.ERROR_TYPE}`]: errType,
+	};
 };
 
 // =============== attachment objects ===============
 
 export const updateAttachmentObjects = (imgObject) => {
-  return {
-    type: actionTypes.UPDATE_ATTACHMENT_OBJECTS,
-    imgObject: imgObject,
-  };
+	return {
+		type: actionTypes.UPDATE_ATTACHMENT_OBJECTS,
+		imgObject: imgObject,
+	};
 };
